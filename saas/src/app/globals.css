@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(900px 500px at 100% -10%, rgba(139, 92, 246, 0.12), transparent 60%),
+    radial-gradient(800px 500px at -10% 110%, rgba(232, 121, 249, 0.08), transparent 60%),
+    #0f0a1c;
+  min-height: 100vh;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-gradient-to-b from-panel to-bg2 p-5;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition;
+  }
+  .btn-primary {
+    @apply bg-gradient-to-br from-purple to-accent text-white shadow-glow hover:-translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply border border-line bg-white/5 text-ink hover:border-purple hover:bg-purple/10;
+  }
+  .input {
+    @apply w-full rounded-lg border border-line bg-bg/60 px-3 py-2 text-sm text-ink
+      placeholder:text-muted2 focus:border-purple focus:outline-none focus:ring-2 focus:ring-purple/30;
+  }
+  .label {
+    @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-muted;
+  }
+  .pill {
+    @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+  .kicker {
+    @apply text-xs font-bold uppercase tracking-widest text-accent;
+  }
+}

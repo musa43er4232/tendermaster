@@ -1,0 +1,240 @@
+// TenderMaster — data model
+// Dev: SQLite (runs anywhere). Prod: switch datasource to PostgreSQL.
+// Note: SQLite has no native enums/JSON; status fields are Strings with
+// documented allowed values and JSON is stored as serialized String.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// A tenant: one EPC firm and its entire knowledge graph.
+model Company {
+  id              String   @id @default(cuid())
+  legalName       String
+  brandName       String?
+  orgType         String?  // "Private Limited" | "Sole Proprietor" | "Partnership" | "JV"
+  headOffice      String?
+  phone           String?
+  email           String?
+  incorpPlace     String?
+  incorpYear      Int?
+  secpNumber      String?
+  ntn             String?
+  // Branding / signing assets applied to every generated page
+  stampDocId      String?  // Document(type=stamp) — the company seal (transparent PNG)
+  signatureDocId  String?  // Document(type=signature) — authorised signatory's signature
+  readinessScore  Int      @default(0) // 0-100, climbs as the graph fills
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  credentials     Credential[]
+  projects        Project[]
+  people          Person[]
+  equipment       Equipment[]
+  financials      FinancialYear[]
+  documents       Document[]
+  tenders         Tender[]
+  reminders       Reminder[]
+}
+
+/// Registrations & licences: PEC, SECP, FBR/NTN, SalesTax, PRA, AEDB, ISO, etc.
+model Credential {
+  id          String    @id @default(cuid())
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  kind        String    // "PEC" | "SECP" | "NTN" | "SALES_TAX" | "PRA" | "AEDB" | "ISO" | "OTHER"
+  label       String?   // human label, e.g. "PEC Constructor Licence"
+  number      String?
+  category    String?   // for PEC: "CA"|"CB"|"C1".."C6"
+  issueDate   DateTime?
+  expiryDate  DateTime?
+  status      String    @default("active") // "active" | "expired" | "pending"
+  documentId  String?   // scanned certificate in the vault
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([companyId, kind])
+}
+
+/// Completed / in-progress projects — experience evidence for eligibility.
+model Project {
+  id                 String    @id @default(cuid())
+  companyId          String
+  company            Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name               String
+  client             String?
+  valuePkr           Float?    // contract / agreement value in PKR
+  sector             String?   // "solar" | "roads" | "buildings" | "water" | "electrical" ...
+  role               String?   // "prime" | "sub" | "jv"
+  startDate          DateTime?
+  endDate            DateTime?
+  status             String    @default("completed") // "completed" | "ongoing"
+  capacity           String?   // e.g. "120 jobs", "2 MW", "5 km"
+  completionCertId   String?   // Document in the vault
+  createdAt          DateTime  @default(now())
+
+  @@index([companyId])
+}
+
+/// Key personnel for technical scoring.
+model Person {
+  id            String   @id @default(cuid())
+  companyId     String
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name          String
+  designation   String?
+  qualification String?
+  pecReg        String?
+  years         Int?
+  nationality   String?
+  cvDocId       String?
+  createdAt     DateTime @default(now())
+
+  @@index([companyId])
+}
+
+model Equipment {
+  id         String   @id @default(cuid())
+  companyId  String
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  type       String
+  qty        Int      @default(1)
+  owned      Boolean  @default(true)
+  capacity   String?
+  createdAt  DateTime @default(now())
+
+  @@index([companyId])
+}
+
+model FinancialYear {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  year        Int
+  turnoverPkr Float?
+  netWorthPkr Float?
+  auditedDocId String?
+  createdAt   DateTime @default(now())
+
+  @@unique([companyId, year])
+}
+
+/// The document vault: every file plus stamp/signature assets.
+model Document {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  kind        String   // "certificate" | "completion" | "cv" | "audited" | "stamp" | "signature" | "bid_security" | "award" | "other"
+  title       String
+  fileName    String?
+  filePath    String?  // local path under /uploads (dev) or object-store key (prod)
+  mimeType    String?
+  sizeBytes   Int?
+  expiryDate  DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([companyId, kind])
+}
+
+/// A tender the firm is evaluating / bidding / has bid.
+model Tender {
+  id                String   @id @default(cuid())
+  companyId         String
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  title             String
+  agency            String?  // "Lahore Development Authority, UD Wing"
+  workType          String?  // "solar" | "roads" | "buildings" ... (drives conditional gates)
+  refNo             String?
+
+  // Financials & timing (extracted)
+  estimatedCostPkr  Float?
+  bidValuePkr       Float?   // the firm's quoted total (if bidding)
+  earnestMoneyPkr   Float?
+  earnestMoneyPct   Float?
+  requiredPecCat    String?  // minimum capability, e.g. "C6" (means "C6 & above")
+  method            String?  // "single_stage_one_envelope" | "single_stage_two_envelope" | ...
+  validityDays      Int?
+  completionTime    String?  // "2 Months"
+  submissionDeadline DateTime?
+  openingDate       DateTime?
+
+  // AI outputs
+  summary           String?  // plain-language brief
+  extractedJson     String?  // raw structured extraction (serialized JSON)
+
+  // Verdict
+  verdict           String?  // "eligible" | "eligible_with_gaps" | "not_eligible" | "pending"
+  predictedScore    Int?     // 0-100
+  verdictReasons    String?  // serialized JSON array of reasons
+
+  // Lifecycle
+  status            String   @default("evaluating") // "evaluating" | "preparing" | "submitted" | "won" | "lost"
+  outcome           String?  // "won" | "lost" | "shortlisted" | null
+  outcomeReason     String?
+  agreementAmountPkr Float?  // from the acceptance letter, on a win
+  awardDocId        String?
+  submittedAt       DateTime?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  requirements      Requirement[]
+  checklist         ChecklistItem[]
+  reminders         Reminder[]
+
+  @@index([companyId, status])
+}
+
+/// A single extracted requirement / gate from a tender.
+model Requirement {
+  id          String   @id @default(cuid())
+  tenderId    String
+  tender      Tender   @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  text        String
+  type        String   // "gate" (pass/fail) | "doc" (must attach) | "scored"
+  category    String?  // "pec" | "tax" | "experience" | "turnover" | "security" | "sector" | "other"
+  result      String?  // "pass" | "gap" | "fail" | null
+  detail      String?  // explanation ("requires C4, you hold C3")
+  createdAt   DateTime @default(now())
+
+  @@index([tenderId])
+}
+
+/// A row in the per-tender document checklist.
+model ChecklistItem {
+  id           String   @id @default(cuid())
+  tenderId     String
+  tender       Tender   @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  label        String
+  required     Boolean  @default(true)
+  status       String   @default("missing") // "have" | "missing" | "expired"
+  documentId   String?  // matched vault document
+  aiHelp       String?  // guidance / draft note
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@index([tenderId])
+}
+
+/// Deadlines, security expiries, licence renewals, win-check nudges.
+model Reminder {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  tenderId    String?
+  tender      Tender?  @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  kind        String   // "deadline" | "security_expiry" | "licence_expiry" | "outcome_check" | "validity"
+  message     String
+  dueDate     DateTime
+  done        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([companyId, done])
+}
