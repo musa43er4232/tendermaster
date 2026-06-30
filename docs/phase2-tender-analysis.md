@@ -103,7 +103,55 @@ Every field below appeared in the real package, confirming the Company Knowledge
 
 ---
 
-## 6. What this changes for the Phase 2 plan
+## 6. The full lifecycle & document taxonomy (post-award docs reviewed)
+
+A second batch of real documents revealed the **complete tender lifecycle** and a clean taxonomy
+the product must model. Documents fall into four types, by *who produces them* and *when*:
+
+| Stage | Document | Produced by | What it is |
+|---|---|---|---|
+| Discovery | **NIT / Tender Notice** | Employer | Newspaper + EPADS advert with the requirement gates |
+| **Submission** | **Technical Bid** (eligibility package) | Bidder | Letter of bid + registrations + certificates (the labelled sections in §2) |
+| **Submission** | **Financial Bid** | Bidder | Priced BOQ — rates in figures **and** words, signed/stamped |
+| **Submission** | **Bank Guarantee** (bid security) | Bidder's bank | ~5% security on a **judicial e-stamp**, in employer's favour, with issue/expiry dates |
+| Evaluation | **Comparative Statement** | Employer | Side-by-side of estimate vs each bidder's rates; names the lowest responsive bidder |
+| **Award** | **Acceptance / Award Letter** | Employer | The official "you won" letter with the **Agreement Amount** |
+
+### What each new document taught us
+
+- **Acceptance Letter = the "win" document.** Carries a letter number, date, the **Agreement
+  Amount** (the awarded contract value), the T.S. amount, completion time, and the BOQ as accepted.
+  In the sample the agreement amount (**Rs 16,976,400**) was *below* the estimate (Rs 17,060,123) —
+  the firm won on price. **This is exactly the file the AI should ask the user to upload when they
+  report a win**, and the field to extract is the **Agreement Amount**.
+- **Comparative Statement = how winning is decided.** It states the firm was the *"single responsive
+  lowest bidder, 0.491% below the TS estimate."* Award goes to the **lowest-evaluated responsive
+  bid**. This is the ground truth behind the "predicted score / will-we-win" feature, and shows wins
+  can hinge on fractions of a percent — and that some tenders have only one responsive bidder.
+- **Bank Guarantee = a tracked, expiring instrument.** Issued by a scheduled bank on a **Punjab
+  e-stamp**, in the employer's favour, ~5% of bid value, with a **guarantee number, issuance date
+  and explicit expiry date**. These are first-class fields the reminder engine must watch — an
+  expired security mid-process is fatal.
+- **Financial Bid** confirms the BOQ structure: every line carries amount **in figures and in
+  words**, a grand total, +5% PST, signed and stamped on every page.
+
+### Win-tracking workflow (product behaviour)
+
+This directly defines an ERP loop in the product:
+
+1. After a tender's submission deadline passes, the AI **periodically asks the user**: *"Any news on
+   [tender]? Won / Lost / Still waiting?"*
+2. If **Won**, it prompts the user to **upload the Acceptance/Award Letter**, extracts the Agreement
+   Amount + dates, **stores it, and marks the tender as Won** in history.
+3. The win (and the agreement value vs estimate) feeds the **win/loss learning loop** and the firm's
+   track record — which itself becomes experience evidence for *future* eligibility ("similar
+   completed projects").
+4. Post-award, new obligations appear (e.g. a **Performance Guarantee**, contract signing) — future
+   reminders the system can drive.
+
+---
+
+## 7. What this changes for the Phase 2 plan
 
 1. **Build the OCR/ingestion pipeline first.** Treat scanned, stamped, skewed pages as the default
    input — not the exception.
@@ -114,6 +162,13 @@ Every field below appeared in the real package, confirming the Company Knowledge
    windows all appeared and all expire.
 6. **Store the financial fields** (estimated cost, earnest-money %, validity, completion time) even
    in the technical-first MVP — they power verdicts and reminders.
+7. **Model the full lifecycle, not just submission.** Track each tender through
+   *Discovery → Submission → Evaluation → Award*, with a **win-tracking loop** that periodically asks
+   for the outcome and, on a win, ingests the **Acceptance Letter** (extract Agreement Amount) and
+   marks it Won.
+8. **Treat the document types as a taxonomy** (NIT, Technical Bid, Financial Bid, Bank Guarantee,
+   Comparative Statement, Acceptance Letter) — each has its own extraction schema and its own role
+   in the data model.
 
 *(This analysis intentionally generalises the bidder's private identifiers; the structural patterns
 are what matter for the build.)*
