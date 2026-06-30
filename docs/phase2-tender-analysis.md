@@ -97,9 +97,30 @@ Every field below appeared in the real package, confirming the Company Knowledge
 - **People:** owners/directors (name, designation, nationality), authorised representative.
 - **Principal activity codes** (e.g. manufacture of electric lighting equipment) — useful for
   matching a firm to relevant tenders.
+- **Company stamp/seal + authorised signature** (see §5a) — captured once, applied to every page.
 
 > Note the **sector-specific** gate: because the work was solar, **AEDB registration** was required.
 > The eligibility engine must support **conditional, work-type-driven requirements**, not a fixed list.
+
+### 5a. Company e-stamp & signature — capture at onboarding, auto-apply to every page
+
+Every BOQ, financial-bid and offer-letter page in the real submissions was **signed and stamped**
+with the firm's official **round seal** (e.g. *"Get Technologies (Pvt.) Ltd."*). Manually stamping
+and signing 20–50 pages per bid is exactly the kind of drudgery the product removes.
+
+**Requirement:**
+
+- During onboarding, capture the company's **official stamp/seal image** (transparent PNG) and the
+  **authorised signatory's signature image**, plus where they should sit on a page.
+- The **PDF builder automatically overlays the stamp (and signature) on every page** of the
+  compiled submission — reproducing the real-world expectation that each page is sealed.
+- Store these as sensitive assets in the document vault (they carry legal weight) with the same
+  encryption/access controls as registrations.
+
+> Keep this distinct from the **judicial e-stamp paper** used for the Bank Guarantee / affidavits
+> (a government stamp-duty instrument bought per-document from a stamp vendor). The onboarding
+> "e-stamp" here is the **company's own seal** applied to each page; the judicial e-stamp is a
+> separate, per-tender acquisition item the checklist should flag and guide the user to obtain.
 
 ---
 
