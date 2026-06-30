@@ -201,6 +201,88 @@ export function computeReadiness(): number {
   return score;
 }
 
+// ---------------- Knowledge-graph CRUD (onboarding) ----------------
+
+function companyId(): string | undefined {
+  return load().companies[0]?.id;
+}
+
+export function listCredentials(): Credential[] {
+  const db = load();
+  return db.credentials.filter((c) => c.companyId === companyId());
+}
+export function addCredential(c: Omit<Credential, 'id' | 'companyId'>): void {
+  const db = load();
+  const cid = companyId();
+  if (!cid) return;
+  db.credentials.push({ id: id(), companyId: cid, ...c });
+  save();
+}
+export function deleteCredential(credId: string): void {
+  const db = load();
+  db.credentials = db.credentials.filter((c) => c.id !== credId);
+  save();
+}
+
+export function listProjects(): Project[] {
+  const db = load();
+  return db.projects.filter((p) => p.companyId === companyId());
+}
+export function addProject(p: Omit<Project, 'id' | 'companyId'>): void {
+  const db = load();
+  const cid = companyId();
+  if (!cid) return;
+  db.projects.push({ id: id(), companyId: cid, ...p });
+  save();
+}
+export function deleteProject(projId: string): void {
+  const db = load();
+  db.projects = db.projects.filter((p) => p.id !== projId);
+  save();
+}
+
+export function addPerson(p: Omit<Person, 'id' | 'companyId'>): void {
+  const db = load();
+  const cid = companyId();
+  if (!cid) return;
+  db.people.push({ id: id(), companyId: cid, ...p });
+  save();
+}
+export function deletePerson(personId: string): void {
+  const db = load();
+  db.people = db.people.filter((p) => p.id !== personId);
+  save();
+}
+
+export function addFinancial(f: Omit<FinancialYear, 'id' | 'companyId'>): void {
+  const db = load();
+  const cid = companyId();
+  if (!cid) return;
+  // upsert by year
+  const existing = db.financials.find((x) => x.companyId === cid && x.year === f.year);
+  if (existing) Object.assign(existing, f);
+  else db.financials.push({ id: id(), companyId: cid, ...f });
+  save();
+}
+export function deleteFinancial(finId: string): void {
+  const db = load();
+  db.financials = db.financials.filter((f) => f.id !== finId);
+  save();
+}
+
+/** Store a stamp or signature asset and point the company record at it. */
+export function setAsset(kind: 'stamp' | 'signature', title: string, file?: { fileName: string; filePath: string; mimeType: string; sizeBytes: number }): void {
+  const db = load();
+  const cid = companyId();
+  if (!cid) return;
+  const doc: DocumentRec = { id: id(), companyId: cid, kind, title, createdAt: now(), ...(file ?? {}) };
+  db.documents.push(doc);
+  const c = db.companies[0];
+  if (kind === 'stamp') c.stampDocId = doc.id;
+  else c.signatureDocId = doc.id;
+  save();
+}
+
 // ---------------- Seed ----------------
 
 function seed(db: DB): void {

@@ -7,6 +7,7 @@ import { Brand } from './Brand';
 const LINKS = [
   { href: '/', label: 'Dashboard' },
   { href: '/tenders/new', label: 'New tender' },
+  { href: '/onboarding', label: 'Onboarding' },
   { href: '/company', label: 'Company profile' },
 ];
 
@@ -33,9 +34,9 @@ export function Nav({ readiness }: { readiness?: number }) {
           })}
           {typeof readiness === 'number' && (
             <Link
-              href="/company"
+              href="/onboarding"
               className="ml-2 hidden items-center gap-2 rounded-full border border-line bg-white/5 px-3 py-1.5 text-xs font-semibold text-purple-soft sm:inline-flex"
-              title="Tender readiness score"
+              title="Complete your profile"
             >
               <span className="h-2 w-2 rounded-full bg-good" />
               {readiness}% ready

@@ -30,6 +30,7 @@ export default async function CompanyPage() {
             <div className="text-[10px] uppercase tracking-wide text-muted2">Tender readiness</div>
             <div className="text-2xl font-extrabold text-purple-soft">{company.readinessScore}%</div>
           </div>
+          <a href="/onboarding" className="btn btn-primary text-xs">Edit profile</a>
           <form action={recomputeReadiness}>
             <button className="btn btn-ghost text-xs">Recompute</button>
           </form>

@@ -41,6 +41,17 @@ export default async function Dashboard() {
         </div>
       </div>
 
+      {/* Onboarding nudge */}
+      {company.readinessScore < 100 && (
+        <Link href="/onboarding" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-purple/40 bg-gradient-to-r from-purple/15 to-accent/10 px-5 py-4 transition hover:border-purple">
+          <div>
+            <p className="text-sm font-semibold text-white">Complete your company profile to win more</p>
+            <p className="text-xs text-muted">You&apos;re {company.readinessScore}% ready. Adding registrations, projects and financials sharpens every eligibility check.</p>
+          </div>
+          <span className="btn btn-primary text-sm">Continue onboarding →</span>
+        </Link>
+      )}
+
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[

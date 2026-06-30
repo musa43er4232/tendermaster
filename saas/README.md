@@ -42,7 +42,10 @@ That's all that's needed from your side right now.
 
 ## What works today
 
-- **Dashboard** — live tenders, win count, open reminders.
+- **Onboarding** — a 6-step guided wizard (company → registrations → experience → team →
+  financials → stamp & signature) with a live readiness score, add/remove for every repeatable
+  item, and the PEC-category field that appears only for PEC licences. Doubles as the profile editor.
+- **Dashboard** — live tenders, win count, open reminders, and a profile-completion nudge.
 - **Upload a tender** → AI extraction → **eligibility verdict** (deterministic hard gates: PEC
   category floor, active filer, sector gates like AEDB-for-solar) + **predicted score**.
 - **Dynamic checklist** — required documents auto-matched to the company's vault (have / missing /
