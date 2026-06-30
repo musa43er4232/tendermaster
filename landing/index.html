@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TenderMaster — Win more tenders, with less effort</title>
+<meta name="description" content="TenderMaster is the AI that reads a tender, tells EPC firms in Pakistan if they qualify, builds the document checklist, and compiles a submission-ready PDF — so you never lose a winnable tender to a clerical mistake.">
+<meta property="og:title" content="TenderMaster — Win more tenders, with less effort">
+<meta property="og:description" content="The AI that reads tenders, tells you if you qualify, and builds your submission for you. Built for EPC companies in Pakistan.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script>document.documentElement.className+=' js';</script>
+</head>
+<body>
+
+<!-- ===== Decorative background ===== -->
+<div class="bg-orbs" aria-hidden="true">
+  <span class="orb orb-1"></span>
+  <span class="orb orb-2"></span>
+  <span class="orb orb-3"></span>
+</div>
+
+<!-- ===== Nav ===== -->
+<header class="nav" id="top">
+  <div class="container nav-inner">
+    <a href="#top" class="brand" aria-label="TenderMaster home">
+      <span class="brand-badge">T</span>
+      <span class="brand-name">TenderMaster</span>
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="Primary">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#use-cases">Use cases</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#waitlist" class="btn btn-primary btn-sm nav-cta">Request early access</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy reveal">
+        <span class="eyebrow">AI tender automation · for EPC firms in Pakistan</span>
+        <h1>Win more tenders,<br><span class="grad">with a fraction of the effort.</span></h1>
+        <p class="lede">
+          TenderMaster reads a 200-page tender in minutes, tells you instantly whether you
+          qualify, builds your document checklist, and compiles a submission-ready PDF — so you
+          never lose a winnable tender to a missing document again.
+        </p>
+        <div class="hero-cta">
+          <a href="#waitlist" class="btn btn-primary btn-lg">Request early access</a>
+          <a href="#how" class="btn btn-ghost btn-lg">See how it works</a>
+        </div>
+        <ul class="hero-trust">
+          <li>✓ Eligibility verdict in ~2 minutes</li>
+          <li>✓ Never miss a deadline</li>
+          <li>✓ One simple plan</li>
+        </ul>
+      </div>
+
+      <!-- Product mockup: the verdict + checklist -->
+      <div class="hero-mock reveal" aria-hidden="true">
+        <div class="mock-window">
+          <div class="mock-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="mock-title">Highway Solarization — EPC Tender #2026-114</span>
+          </div>
+          <div class="mock-body">
+            <div class="verdict verdict-ok">
+              <div class="verdict-icon">✓</div>
+              <div>
+                <div class="verdict-title">Eligible with 2 fixable gaps</div>
+                <div class="verdict-sub">Predicted technical score ≈ 74 / 100</div>
+              </div>
+            </div>
+            <div class="mock-meta">
+              <span>Deadline <b>4 days</b></span>
+              <span>PEC required <b>C-4</b></span>
+              <span>Bid security <b>Rs 12M</b></span>
+            </div>
+            <div class="mock-checklist">
+              <div class="chk done"><span class="cb">✓</span> PEC constructor licence (C-3)</div>
+              <div class="chk done"><span class="cb">✓</span> Audited financials — 3 years</div>
+              <div class="chk done"><span class="cb">✓</span> Similar projects (2 of 3)</div>
+              <div class="chk miss"><span class="cb">!</span> Non-blacklisting affidavit <span class="tag">AI can draft</span></div>
+              <div class="chk miss"><span class="cb">!</span> 3rd completion certificate <span class="tag">Upload</span></div>
+            </div>
+            <button class="mock-generate">Generate submission PDF →</button>
+          </div>
+        </div>
+        <div class="mock-float mock-float-1">⏰ Bid security expires in 5 days</div>
+        <div class="mock-float mock-float-2">📄 Submission package ready</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Logos / context strip ===== -->
+  <section class="strip">
+    <div class="container">
+      <p>Built around how tenders <em>actually</em> work in Pakistan — PPRA &amp; PEC rules, the category ladder, two-envelope bidding, and the document checklist that decides who wins.</p>
+    </div>
+  </section>
+
+  <!-- ===== Problem ===== -->
+  <section class="section" id="problem">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">The problem</span>
+        <h2>Tendering is slow, and one small mistake costs you the whole bid.</h2>
+        <p class="section-sub">EPC firms leave winnable contracts on the table — not because they can't do the work, but because the paperwork is brutal.</p>
+      </div>
+      <div class="grid cards-4">
+        <div class="card pain reveal">
+          <div class="pain-num">300<small>pages</small></div>
+          <h3>Tenders are enormous</h3>
+          <p>A senior engineer burns hours just finding the dozen things that actually matter in a 150–300 page document.</p>
+        </div>
+        <div class="card pain reveal">
+          <div class="pain-num">?</div>
+          <h3>Eligibility is unclear</h3>
+          <p>Firms prepare for days, then discover too late they don't even qualify — wrong PEC category, missing experience.</p>
+        </div>
+        <div class="card pain reveal">
+          <div class="pain-num">1<small>missing doc</small></div>
+          <h3>One omission = rejection</h3>
+          <p>A single missing affidavit, an expired licence, or the wrong order, and the bid is thrown out before the price is read.</p>
+        </div>
+        <div class="card pain reveal">
+          <div class="pain-num">✕</div>
+          <h3>Deadlines slip</h3>
+          <p>Submission dates, bid-security expiry and licence renewals are tracked on paper — or in someone's head.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== How it works ===== -->
+  <section class="section section-alt" id="how">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">How it works</span>
+        <h2>Set it up once. Then every tender becomes simple.</h2>
+        <p class="section-sub">Six steps from a raw tender PDF to a finished, submission-ready package.</p>
+      </div>
+      <ol class="steps">
+        <li class="step reveal">
+          <span class="step-n">1</span>
+          <div><h3>Build your company profile</h3><p>Tell TenderMaster everything once — registrations, licences, past projects, certificates, financials, staff, equipment. It becomes your permanent, reusable profile.</p></div>
+        </li>
+        <li class="step reveal">
+          <span class="step-n">2</span>
+          <div><h3>Upload a tender</h3><p>Drop in the tender PDF. The AI reads all 200 pages in about a minute and summarises what it actually wants in plain language.</p></div>
+        </li>
+        <li class="step reveal">
+          <span class="step-n">3</span>
+          <div><h3>Get a clear verdict</h3><p>Eligible, eligible-with-gaps, or not eligible — with the exact reasons and a predicted score. Stop wasting days on bids you can't win.</p></div>
+        </li>
+        <li class="step reveal">
+          <span class="step-n">4</span>
+          <div><h3>Work the smart checklist</h3><p>Every required document, auto-matched to your profile. Green = you already have it. Red = upload it, or ask the AI to help you get or draft it.</p></div>
+        </li>
+        <li class="step reveal">
+          <span class="step-n">5</span>
+          <div><h3>Generate the submission PDF</h3><p>One click produces a single, correctly-ordered, professional package — plus an optional "extra strengths" section that helps you win.</p></div>
+        </li>
+        <li class="step reveal">
+          <span class="step-n">6</span>
+          <div><h3>It remembers &amp; reminds</h3><p>Tracks every live tender, nudges you before deadlines and expiries, and keeps a full history of what you bid, won and lost.</p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== Features ===== -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">What you get</span>
+        <h2>Not a chatbot. A decision-and-submission engine.</h2>
+        <p class="section-sub">Every feature exists to answer three questions: Can you bid? What do you need? Where's your finished package?</p>
+      </div>
+      <div class="grid cards-3">
+        <div class="card feature reveal"><div class="f-ic">🧠</div><h3>Company knowledge profile</h3><p>A living record of your firm that every bid reads from — so you never re-type the same details again.</p></div>
+        <div class="card feature reveal"><div class="f-ic">📖</div><h3>AI tender reader</h3><p>Turns a 200-page document into a plain-language brief: scope, deadline, securities, and every requirement.</p></div>
+        <div class="card feature reveal"><div class="f-ic">✅</div><h3>Eligibility verdict</h3><p>A clear Go / No-Go answer with the exact reasons — and a predicted technical score for the bid.</p></div>
+        <div class="card feature reveal"><div class="f-ic">📋</div><h3>Dynamic checklist</h3><p>Auto-built per tender. Items you have show green; gaps show red with upload and "help me get this" actions.</p></div>
+        <div class="card feature reveal"><div class="f-ic">📄</div><h3>One-click PDF builder</h3><p>Compiles all required documents into one correctly-ordered, submission-ready package in minutes.</p></div>
+        <div class="card feature reveal"><div class="f-ic">⏰</div><h3>Reminders &amp; history</h3><p>Never miss a deadline, security expiry or licence renewal — and keep every past tender on record.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Use cases ===== -->
+  <section class="section section-alt" id="use-cases">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Use cases</span>
+        <h2>Real moments where TenderMaster earns its keep.</h2>
+      </div>
+      <div class="grid cards-3 usecases">
+        <div class="card uc reveal"><h3>“Should we even bid on this?”</h3><p>Upload the notice, get a Go / No-Go answer in two minutes, and skip the tenders you can't win.</p></div>
+        <div class="card uc reveal"><h3>“Don't reject us on a technicality.”</h3><p>The checklist catches a licence that expires mid-project and a forgotten affidavit — fixed before submission, not after rejection.</p></div>
+        <div class="card uc reveal"><h3>“Build the bid fast.”</h3><p>Deadline in two days. Fill the few missing items, click generate, and the full package is ready in minutes — not a midnight scramble.</p></div>
+        <div class="card uc reveal"><h3>“Bid on more, with the same team.”</h3><p>A firm that managed 4 tenders a month can pursue 12 — without hiring anyone new.</p></div>
+        <div class="card uc reveal"><h3>“Stop missing deadlines.”</h3><p>Reminders mean no submission date, security expiry or licence renewal is ever missed again.</p></div>
+        <div class="card uc reveal"><h3>“Keep our knowledge in one place.”</h3><p>A new hire can prepare a bid on day one — every certificate and project record already lives in TenderMaster.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Why hard to copy ===== -->
+  <section class="section" id="why">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Why TenderMaster</span>
+        <h2>It gets smarter — and harder to leave — every month.</h2>
+        <p class="section-sub">A look-alike website is easy. What we build over time is not.</p>
+      </div>
+      <div class="grid cards-2 moat">
+        <div class="card reveal"><span class="moat-i">01</span><h3>Your data lives inside it</h3><p>Once years of projects, certificates and records are loaded, moving anywhere else means starting over.</p></div>
+        <div class="card reveal"><span class="moat-i">02</span><h3>It knows Pakistani tendering</h3><p>PPRA &amp; PEC rules, category limits and agency-specific forms are built in — not something a generic tool has.</p></div>
+        <div class="card reveal"><span class="moat-i">03</span><h3>It learns each agency</h3><p>Every tender sharpens how it understands what each government body wants. A copycat starts from zero.</p></div>
+        <div class="card reveal"><span class="moat-i">04</span><h3>It becomes your system of record</h3><p>Your tender history, document vault and deadline calendar all live here. It's where your firm operates from.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Pricing ===== -->
+  <section class="section section-alt" id="pricing">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Pricing</span>
+        <h2>One simple plan. No tiers, no surprises.</h2>
+        <p class="section-sub">Less than the cost of losing a single winnable tender to a missed document.</p>
+      </div>
+      <div class="price-wrap reveal">
+        <div class="price-card">
+          <div class="price-flag">Everything included</div>
+          <h3>TenderMaster</h3>
+          <div class="price"><span class="amt">$150</span><span class="per">/ month</span></div>
+          <ul class="price-list">
+            <li>Unlimited company profile &amp; document vault</li>
+            <li>AI tender reading &amp; eligibility verdicts</li>
+            <li>Dynamic document checklists</li>
+            <li>One-click submission PDF builder</li>
+            <li>Deadline, security &amp; licence reminders</li>
+            <li>Full tender history &amp; outcomes</li>
+          </ul>
+          <a href="#waitlist" class="btn btn-primary btn-lg btn-block">Request early access</a>
+          <p class="price-note">Be first to onboard when we launch. No card required to join the waitlist.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="section" id="faq">
+    <div class="container narrow">
+      <div class="section-head">
+        <span class="kicker">FAQ</span>
+        <h2>Questions, answered.</h2>
+      </div>
+      <div class="faq">
+        <details class="faq-item reveal">
+          <summary>Who is TenderMaster for?</summary>
+          <p>EPC (Engineering, Procurement &amp; Construction) and contracting firms in Pakistan that bid on public-sector tenders and want to qualify faster, submit cleaner packages, and stop missing deadlines.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>Does it submit the tender for me?</summary>
+          <p>TenderMaster prepares everything — the eligibility verdict, the checklist, and a finished, correctly-ordered submission PDF. You review and submit it. You always stay in control of the final bid.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>How does it know if we're eligible?</summary>
+          <p>It reads the tender's requirements and checks them against your company profile — PEC category, turnover, experience, registrations and more — then gives a clear verdict with the exact reasons.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>What if we're missing a document?</summary>
+          <p>The checklist flags it in red. You can upload it, reuse one already in your vault, or ask the AI to explain how to obtain it — or draft it for you, such as affidavits and cover letters.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>Is our company data secure?</summary>
+          <p>Yes. Your documents are your firm's most sensitive papers, and they're treated that way — kept private to your account with security and access controls as a core part of the product.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>When can we start?</summary>
+          <p>We're onboarding early-access firms now. Join the waitlist below and we'll reach out as spots open.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Waitlist CTA ===== -->
+  <section class="cta" id="waitlist">
+    <div class="container">
+      <div class="cta-card reveal">
+        <span class="kicker">Early access</span>
+        <h2>Be first to win more tenders.</h2>
+        <p>Join the waitlist and we'll get you set up before everyone else. No card required.</p>
+        <form class="waitlist-form" id="waitlistForm" novalidate>
+          <div class="form-row">
+            <input type="text" name="company" id="company" placeholder="Company name" autocomplete="organization" aria-label="Company name" required>
+            <input type="email" name="email" id="email" placeholder="Work email" autocomplete="email" aria-label="Work email" required>
+            <button type="submit" class="btn btn-primary btn-lg">Join the waitlist</button>
+          </div>
+          <p class="form-msg" id="formMsg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <a href="#top" class="brand">
+        <span class="brand-badge">T</span>
+        <span class="brand-name">TenderMaster</span>
+      </a>
+      <p>The AI that reads tenders, tells you if you qualify, and builds your submission — for EPC firms in Pakistan.</p>
+    </div>
+    <nav class="footer-cols" aria-label="Footer">
+      <div>
+        <h4>Product</h4>
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#use-cases">Use cases</a>
+        <a href="#faq">FAQ</a>
+        <a href="#waitlist">Early access</a>
+      </div>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <span>© <span id="year">2026</span> TenderMaster. All rights reserved.</span>
+    <span>Made for the people who build Pakistan.</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
