@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TenderMaster — MVP &amp; Research Blueprint</title>
+<style>
+  :root{
+    --bg:#140d23;
+    --bg2:#1c1233;
+    --panel:#241640;
+    --panel2:#2c1b4d;
+    --line:#3d2a66;
+    --purple:#8b5cf6;
+    --purple-bright:#a78bfa;
+    --purple-soft:#c4b5fd;
+    --accent:#e879f9;
+    --gold:#f5c451;
+    --green:#34d399;
+    --red:#fb7185;
+    --text:#ece8f7;
+    --muted:#a99fc7;
+    --muted2:#8579a8;
+  }
+  *{box-sizing:border-box;}
+  @page{size:210mm 297mm;margin:0;}
+  html,body{margin:0;padding:0;background:#140d23;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif;
+    font-size:13px;
+    line-height:1.62;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .page{
+    width:210mm;
+    height:297mm;
+    padding:15mm 18mm;
+    margin:0 auto;
+    background:
+      radial-gradient(1200px 500px at 100% -10%, rgba(139,92,246,0.14), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(232,121,249,0.08), transparent 60%),
+      var(--bg);
+    position:relative;
+    page-break-after:always;
+    overflow:hidden;
+  }
+  .page:last-child{page-break-after:auto;}
+
+  h1,h2,h3,h4{font-weight:700;line-height:1.2;color:#fff;}
+  h2{
+    font-size:21px;margin:0 0 4px;
+    background:linear-gradient(90deg,#fff,var(--purple-soft));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  h3{font-size:15.5px;margin:22px 0 8px;color:var(--purple-bright);}
+  h4{font-size:13px;margin:14px 0 5px;color:var(--purple-soft);}
+  p{margin:7px 0;}
+  a{color:var(--purple-soft);}
+  small{color:var(--muted2);}
+  .eyebrow{
+    text-transform:uppercase;letter-spacing:3px;font-size:10px;
+    color:var(--accent);font-weight:700;margin-bottom:8px;
+  }
+  .sec-rule{height:3px;width:64px;background:linear-gradient(90deg,var(--purple),var(--accent));border-radius:2px;margin:6px 0 14px;}
+  .muted{color:var(--muted);}
+  strong{color:#fff;}
+  em{color:var(--purple-soft);font-style:normal;}
+
+  /* COVER */
+  .cover{
+    display:flex;flex-direction:column;justify-content:center;
+    background:
+      radial-gradient(1000px 600px at 80% 0%, rgba(139,92,246,0.30), transparent 55%),
+      radial-gradient(900px 700px at 0% 100%, rgba(232,121,249,0.18), transparent 55%),
+      linear-gradient(160deg,#0f0a1c,#1b1033 70%, #241544);
+  }
+  .logo-mark{
+    display:inline-flex;align-items:center;gap:12px;margin-bottom:40px;
+  }
+  .logo-badge{
+    width:46px;height:46px;border-radius:12px;
+    background:linear-gradient(135deg,var(--purple),var(--accent));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:22px;color:#fff;
+    box-shadow:0 8px 30px rgba(139,92,246,0.5);
+  }
+  .logo-text{font-size:18px;font-weight:700;letter-spacing:.5px;}
+  .cover h1{
+    font-size:52px;line-height:1.04;margin:0 0 18px;letter-spacing:-1px;
+  }
+  .cover h1 span{
+    background:linear-gradient(90deg,var(--purple-bright),var(--accent));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .cover .sub{font-size:17px;color:var(--muted);max-width:80%;}
+  .cover .meta{
+    margin-top:54px;display:flex;gap:14px;flex-wrap:wrap;
+  }
+  .chip{
+    border:1px solid var(--line);background:rgba(139,92,246,0.10);
+    padding:7px 14px;border-radius:30px;font-size:11px;color:var(--purple-soft);
+  }
+  .cover-foot{
+    position:absolute;bottom:20mm;left:18mm;right:18mm;
+    display:flex;justify-content:space-between;font-size:11px;color:var(--muted2);
+    border-top:1px solid var(--line);padding-top:12px;
+  }
+
+  /* layout helpers */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .card{
+    background:linear-gradient(160deg,var(--panel),var(--bg2));
+    border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+  }
+  .card h4{margin-top:0;}
+  .card.glow{box-shadow:inset 0 0 0 1px rgba(167,139,250,0.15);}
+  .pill{display:inline-block;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;
+    padding:3px 9px;border-radius:20px;font-weight:700;}
+  .pill.core{background:rgba(139,92,246,0.18);color:var(--purple-bright);border:1px solid var(--line);}
+  .pill.moat{background:rgba(232,121,249,0.16);color:var(--accent);border:1px solid #5a2a63;}
+  .pill.mvp{background:rgba(52,211,153,0.14);color:var(--green);border:1px solid #1f5e48;}
+  .pill.later{background:rgba(245,196,81,0.13);color:var(--gold);border:1px solid #5e4a1f;}
+
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:11.5px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{color:var(--purple-soft);text-transform:uppercase;letter-spacing:.6px;font-size:9.5px;background:rgba(139,92,246,0.07);}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.012);}
+
+  ul,ol{margin:7px 0;padding-left:18px;}
+  li{margin:4px 0;}
+  ul.tight li{margin:2px 0;}
+  .check li{list-style:none;position:relative;padding-left:22px;margin:5px 0;}
+  .check li:before{content:"▰";position:absolute;left:0;color:var(--purple);font-size:10px;top:2px;}
+
+  .callout{
+    border-left:3px solid var(--accent);
+    background:linear-gradient(90deg,rgba(232,121,249,0.10),transparent);
+    padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0;
+  }
+  .callout.tip{border-left-color:var(--green);background:linear-gradient(90deg,rgba(52,211,153,0.10),transparent);}
+  .callout.warn{border-left-color:var(--gold);background:linear-gradient(90deg,rgba(245,196,81,0.10),transparent);}
+
+  .kpi{display:flex;gap:12px;margin:14px 0;}
+  .kpi .card{flex:1;text-align:center;}
+  .kpi .num{font-size:26px;font-weight:800;color:var(--purple-bright);}
+  .kpi .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+
+  .pagenum{position:absolute;bottom:12mm;right:18mm;font-size:10px;color:var(--muted2);}
+  .pagelabel{position:absolute;bottom:12mm;left:18mm;font-size:10px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;}
+
+  .toc-item{display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px dashed var(--line);padding:9px 0;}
+  .toc-item .t{color:var(--text);}
+  .toc-item .n{color:var(--accent);font-weight:700;}
+  .toc-part{color:var(--purple-bright);font-size:11px;text-transform:uppercase;letter-spacing:2px;margin:18px 0 4px;}
+
+  .flow{display:flex;flex-direction:column;gap:8px;margin:12px 0;}
+  .flow .step{display:flex;gap:12px;align-items:flex-start;
+    background:rgba(139,92,246,0.06);border:1px solid var(--line);border-radius:10px;padding:9px 12px;}
+  .flow .num{flex:none;width:24px;height:24px;border-radius:50%;
+    background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+  .flow .step b{color:#fff;}
+
+  .moat-row{display:flex;gap:12px;align-items:flex-start;margin:11px 0;
+    padding-bottom:11px;border-bottom:1px solid var(--line);}
+  .moat-row .idx{flex:none;font-size:22px;font-weight:800;color:var(--purple);width:34px;}
+
+  .layer{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:6px 0;
+    background:linear-gradient(90deg,rgba(139,92,246,0.10),rgba(36,22,64,0.4));}
+  .layer b{color:var(--purple-bright);}
+
+  .twocol{column-count:2;column-gap:20px;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 2px;font-size:10px;color:var(--muted);}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="page cover">
+  <div class="logo-mark">
+    <div class="logo-badge">T</div>
+    <div class="logo-text">TenderMaster</div>
+  </div>
+  <div class="eyebrow">Product Blueprint &amp; Market Research · v1.0</div>
+  <h1>The AI that reads, qualifies &amp;<br><span>compiles winning tenders.</span></h1>
+  <p class="sub">An MVP blueprint for an AI automation SaaS that turns 200-page EPC tenders into a clear eligibility verdict, a live document checklist, and a single submission-ready PDF — built around a company knowledge graph that is genuinely hard to copy.</p>
+  <div class="meta">
+    <span class="chip">EPC / Construction · Pakistan</span>
+    <span class="chip">Single plan · $150 / month</span>
+    <span class="chip">Eligibility-first AI</span>
+    <span class="chip">ERP + Reminder layer</span>
+  </div>
+  <div class="cover-foot">
+    <span>Prepared for: Founder, TenderMaster</span>
+    <span>Confidential — Internal Strategy Document</span>
+    <span>June 2026</span>
+  </div>
+</section>
+
+<!-- ============ TOC ============ -->
+<section class="page">
+  <div class="eyebrow">Contents</div>
+  <h2>What's inside</h2>
+  <div class="sec-rule"></div>
+
+  <div class="toc-part">Part A — The Domain</div>
+  <div class="toc-item"><span class="t">1 · How EPC tendering actually works in Pakistan</span><span class="n">03</span></div>
+  <div class="toc-item"><span class="t">2 · Eligibility, registrations &amp; the PEC category ladder</span><span class="n">04</span></div>
+  <div class="toc-item"><span class="t">3 · Anatomy of a tender &amp; the master document checklist</span><span class="n">05</span></div>
+  <div class="toc-item"><span class="t">4 · The 7 real pain points we remove</span><span class="n">06</span></div>
+
+  <div class="toc-part">Part B — The Product</div>
+  <div class="toc-item"><span class="t">5 · Vision, principle &amp; the six core modules</span><span class="n">07</span></div>
+  <div class="toc-item"><span class="t">6 · The Company Knowledge Graph (onboarding)</span><span class="n">08</span></div>
+  <div class="toc-item"><span class="t">7 · End-to-end user journey</span><span class="n">10</span></div>
+
+  <div class="toc-part">Part C — The Moat</div>
+  <div class="toc-item"><span class="t">8 · Seven layers that make it hard to copy</span><span class="n">11</span></div>
+
+  <div class="toc-part">Part D — Build It</div>
+  <div class="toc-item"><span class="t">9 · MVP scope (in / out) &amp; AI architecture</span><span class="n">12</span></div>
+  <div class="toc-item"><span class="t">10 · Data model &amp; tech stack</span><span class="n">13</span></div>
+
+  <div class="toc-part">Part E — Sharpen It</div>
+  <div class="toc-item"><span class="t">11 · My recommendations to make it win more</span><span class="n">14</span></div>
+  <div class="toc-item"><span class="t">12 · Pricing logic, roadmap &amp; risks</span><span class="n">15</span></div>
+
+  <div class="toc-part">Appendix</div>
+  <div class="toc-item"><span class="t">A · Onboarding questionnaire (MVP intake)</span><span class="n">16</span></div>
+  <div class="toc-item"><span class="t">B · Eligibility scorecard &amp; closing note</span><span class="n">17</span></div>
+
+  <span class="pagelabel">TenderMaster</span>
+  <span class="pagenum">02</span>
+</section>
+
+<!-- ============ PART A.1 ============ -->
+<section class="page">
+  <div class="eyebrow">Part A · The Domain</div>
+  <h2>1 · How EPC tendering actually works in Pakistan</h2>
+  <div class="sec-rule"></div>
+  <p>Most EPC (Engineering, Procurement &amp; Construction) work flows through <strong>public-sector procurement</strong>, regulated by <strong>PPRA</strong> — federally (PP Rules 2004) and through provincial bodies (PPRA Punjab, SPPRA Sindh, KPPRA, BPPRA). Contracts are floated as EPC / Turnkey / LSTK packages, almost always under <strong>FIDIC</strong> conditions (Silver Book for turnkey). The default bidding method is <strong>Single-Stage Two-Envelope (SSTE)</strong>; large/complex jobs use Two-Stage Two-Envelope.</p>
+
+  <h3>The lifecycle a bidder lives through</h3>
+  <div class="flow">
+    <div class="step"><div class="num">1</div><div><b>Discovery.</b> Tender advertised on EPADS / PPRA portals, in newspapers, and on the agency's own site. Bidder screens for fit.</div></div>
+    <div class="step"><div class="num">2</div><div><b>Eligibility check.</b> Does our PEC category, turnover, and similar-project experience meet the bar? <em>This is the highest-leverage decision — and where the product starts.</em></div></div>
+    <div class="step"><div class="num">3</div><div><b>Document purchase.</b> Buy/download the bidding document (a fee, often Rs 2,000–25,000).</div></div>
+    <div class="step"><div class="num">4</div><div><b>Bid security.</b> Arrange a bank guarantee / CDR / pay-order, typically <b>1–5%</b> of bid value.</div></div>
+    <div class="step"><div class="num">5</div><div><b>Compile.</b> Assemble Technical Bid (no prices) + Financial Bid (priced BOQ) into two sealed envelopes / two e-uploads.</div></div>
+    <div class="step"><div class="num">6</div><div><b>Submit before deadline.</b> Via EPADS (federal, mandatory above threshold) or physically. <em>Submission day = opening day.</em></div></div>
+    <div class="step"><div class="num">7</div><div><b>Public opening &amp; evaluation.</b> Technical envelopes opened first; only technically-responsive bidders' financial envelopes are opened. Award to lowest-evaluated responsive bid.</div></div>
+    <div class="step"><div class="num">8</div><div><b>Award &amp; mobilise.</b> Winner posts a Performance Guarantee (5–10%) and signs the contract.</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>The product's wedge:</strong> 80% of a bidder's pain lives in steps 2 &amp; 5 — <em>"Am I even eligible?"</em> and <em>"Did I attach every single required document, correctly?"</em>. A missing affidavit or an out-of-category PEC licence gets a bid rejected before price is ever read. That is the problem TenderMaster exists to kill.
+  </div>
+
+  <span class="pagelabel">Part A · The Domain</span>
+  <span class="pagenum">03</span>
+</section>
+
+<!-- ============ PART A.2 ============ -->
+<section class="page">
+  <div class="eyebrow">Part A · The Domain</div>
+  <h2>2 · Eligibility, registrations &amp; the PEC category ladder</h2>
+  <div class="sec-rule"></div>
+  <p>Before a firm can legally bid, several credentials must exist and be current. The AI must <strong>store, verify, and watch the expiry of every one of these</strong> per company — they are the backbone of every eligibility check.</p>
+
+  <table>
+    <tr><th>Credential</th><th>Issued by</th><th>Why it gates the bid</th></tr>
+    <tr><td><b>PEC Constructor Licence</b></td><td>Pakistan Engineering Council</td><td>Mandatory to execute engineering works. The tender names a <b>minimum category</b>; below it = auto-reject.</td></tr>
+    <tr><td>SECP / Firm registration</td><td>SECP / trade office</td><td>Legal entity proof.</td></tr>
+    <tr><td>NTN + Sales-Tax reg. + Active Filer</td><td>FBR</td><td>Tax compliance; non-filers are excluded.</td></tr>
+    <tr><td>EPADS vendor account</td><td>PPRA</td><td>Required to e-submit federal bids.</td></tr>
+    <tr><td>Bank standing / line of credit</td><td>Bank</td><td>Backs bid security &amp; proves liquidity.</td></tr>
+    <tr><td>Sector licences (NEPRA/AEDB, PSQCA, ISO)</td><td>Various</td><td>Power, water, quality-specific gates.</td></tr>
+  </table>
+
+  <h3>The PEC category ladder — the single biggest gate</h3>
+  <p>Your licence category <strong>caps the project value you may bid for</strong>. Firms climb it over years by accumulating completed-project value and <em>PCP (Professional Credit Points)</em>. The AI must map every tender's value to the required category and instantly tell the firm if they're under-categorised.</p>
+  <table>
+    <tr><th>Category</th><th>Indicative project-value ceiling</th><th>Typical firm</th></tr>
+    <tr><td><b>C-6</b></td><td>~Rs 25 million (entry; non-engineers allowed)</td><td>New / micro contractor</td></tr>
+    <tr><td><b>C-5 → C-3</b></td><td>Rising ceilings (tens → hundreds of millions)</td><td>Growing SME EPC firm</td></tr>
+    <tr><td><b>C-2 / C-1</b></td><td>Large (hundreds of millions+)</td><td>Established contractor</td></tr>
+    <tr><td><b>C-B / C-A</b></td><td>Very large / <b>no limit</b></td><td>Top-tier national EPC</td></tr>
+  </table>
+  <div class="callout tip"><strong>Data point worth owning:</strong> the exact, current category ceilings change with PEC policy. TenderMaster should treat these as <em>versioned reference data it maintains centrally</em> — every customer benefits the instant it's updated. (See Moat, Layer 4.)</div>
+
+  <h3>What "eligibility" really means for one tender</h3>
+  <ul class="tight">
+    <li><b>Hard gates</b> (pass/fail): PEC category ≥ required · active filer · valid registrations · turnover ≥ X · similar-work experience ≥ N projects of ≥ Rs Y.</li>
+    <li><b>Soft / scored</b>: equipment owned, key personnel quality, past performance, financial ratios, completion certificates.</li>
+  </ul>
+
+  <span class="pagelabel">Part A · The Domain</span>
+  <span class="pagenum">04</span>
+</section>
+
+<!-- ============ PART A.3 ============ -->
+<section class="page">
+  <div class="eyebrow">Part A · The Domain</div>
+  <h2>3 · Anatomy of a tender &amp; the master document checklist</h2>
+  <div class="sec-rule"></div>
+  <p>Every bidding document, however long, decomposes into the same skeleton. The AI's <strong>extraction job</strong> is to read the PDF and pull these into structured fields, then derive the checklist.</p>
+
+  <div class="grid2">
+    <div class="card"><h4>What's in the tender document</h4>
+      <ul class="tight">
+        <li>Invitation for Bids (IFB) — scope, deadline, fee</li>
+        <li>Instructions to Bidders (ITB)</li>
+        <li><b>Eligibility &amp; qualification criteria</b></li>
+        <li>Scope of work / technical specs / drawings</li>
+        <li>Bill of Quantities (BOQ) / price schedule</li>
+        <li>Conditions of Contract (FIDIC-based)</li>
+        <li>Bid &amp; performance security clauses</li>
+        <li><b>Evaluation &amp; scoring criteria</b></li>
+        <li>Forms, affidavits, integrity pact</li>
+      </ul>
+    </div>
+    <div class="card"><h4>The two-envelope bid we must build</h4>
+      <p style="margin:4px 0"><b style="color:var(--purple-bright)">Envelope A — Technical</b> (no prices)</p>
+      <p style="margin:4px 0"><b style="color:var(--accent)">Envelope B — Financial</b> (priced BOQ + bid security)</p>
+      <p class="muted" style="font-size:11px;margin-top:8px">Technical is opened &amp; scored first; only the responsive bidders' financial envelopes get opened. The compiled PDF TenderMaster generates <b>is Envelope A</b> — the document-heavy half where bids die.</p>
+    </div>
+  </div>
+
+  <h3>Master document checklist (the AI's reusable backbone)</h3>
+  <p class="muted" style="font-size:11px">Every tender selects a subset of these. The AI maps tender language → checklist items → the company's stored documents, then flags gaps.</p>
+  <div class="twocol">
+  <ul class="check">
+    <li>Covering letter / bid form (signed, stamped)</li>
+    <li>PEC constructor licence (correct category)</li>
+    <li>SECP / firm registration certificate</li>
+    <li>NTN &amp; Sales-Tax registration; Active-filer printout</li>
+    <li>Audited financial statements (3 yrs)</li>
+    <li>Bank statement / line-of-credit letter</li>
+    <li>Turnover certificate</li>
+    <li>Bid security (BG / CDR / pay-order)</li>
+    <li>List of similar completed projects</li>
+    <li>Completion certificates / client PCs</li>
+    <li>Work-in-hand / commitments statement</li>
+    <li>Key personnel CVs + PEC reg. of engineers</li>
+    <li>Owned / leased plant &amp; equipment schedule</li>
+    <li>Methodology &amp; work programme (bar chart)</li>
+    <li>Affidavit — non-blacklisting</li>
+    <li>Integrity pact</li>
+    <li>Power of attorney / authorised signatory</li>
+    <li>JV agreement (if applicable)</li>
+    <li>Compliance / specification response sheet</li>
+    <li>ISO / sector certifications</li>
+  </ul>
+  </div>
+
+  <h3>Evaluation: how the bid is scored</h3>
+  <p>Technical responsiveness is <b>pass/fail against the hard gates</b>; many tenders then apply a <b>weighted technical score</b> (experience, personnel, methodology, equipment, financial strength). Lowest-evaluated <em>responsive</em> price wins. <strong>Knowing the weightings lets the AI tell a firm not just "you qualify" but "you'd score ~72/100 — here's the 18 points you're leaving on the table."</strong></p>
+
+  <span class="pagelabel">Part A · The Domain</span>
+  <span class="pagenum">05</span>
+</section>
+
+<!-- ============ PART A.4 ============ -->
+<section class="page">
+  <div class="eyebrow">Part A · The Domain</div>
+  <h2>4 · The 7 real pain points we remove</h2>
+  <div class="sec-rule"></div>
+  <p>These are the concrete jobs EPC firms hate. Each maps to a TenderMaster module — design the product around the pain, not the feature.</p>
+
+  <table>
+    <tr><th>#</th><th>The pain today</th><th>What it costs them</th><th>TenderMaster removes it via</th></tr>
+    <tr><td>1</td><td>Reading a 150–300 page tender to find the 12 things that actually matter</td><td>2–6 hours of a senior engineer, per tender</td><td>AI tender reader → structured summary</td></tr>
+    <tr><td>2</td><td>Deciding "are we even eligible?" — often discovered <em>after</em> effort is spent</td><td>Wasted bids, lost bid-doc fees</td><td>Eligibility / Go–No-Go engine</td></tr>
+    <tr><td>3</td><td>Figuring out the <em>exact</em> document list and chasing each one</td><td>Rejected on a missing affidavit</td><td>Dynamic checklist + upload + "acquire" help</td></tr>
+    <tr><td>4</td><td>Re-typing the same company data into every bid form</td><td>Hours of copy-paste, transcription errors</td><td>Knowledge Graph auto-fill</td></tr>
+    <tr><td>5</td><td>Compiling 20+ PDFs into one correctly-ordered submission</td><td>Last-night panic, wrong order = penalised</td><td>One-click compiled PDF generator</td></tr>
+    <tr><td>6</td><td>Tracking deadlines, securities expiry, validity windows across many live tenders</td><td>Missed deadlines = zero recovery</td><td>ERP + reminder engine</td></tr>
+    <tr><td>7</td><td>No memory of what they bid, won, or lost — and why</td><td>Same mistakes repeat; no learning</td><td>Tender history + win/loss feedback loop</td></tr>
+  </table>
+
+  <div class="kpi">
+    <div class="card"><div class="num">150–300</div><div class="lbl">pages per tender</div></div>
+    <div class="card"><div class="num">20+</div><div class="lbl">documents to compile</div></div>
+    <div class="card"><div class="num">1 missing doc</div><div class="lbl">= full rejection</div></div>
+    <div class="card"><div class="num">90–120d</div><div class="lbl">bid validity to track</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>Reframing the value:</strong> the firm isn't paying $150/mo for "AI that fills forms." They're paying to <em>never lose a winnable tender to a clerical mistake again</em>, and to bid on <em>more</em> tenders with the same staff. That's the pitch.
+  </div>
+
+  <span class="pagelabel">Part A · The Domain</span>
+  <span class="pagenum">06</span>
+</section>
+
+<!-- ============ PART B.5 ============ -->
+<section class="page">
+  <div class="eyebrow">Part B · The Product</div>
+  <h2>5 · Vision, principle &amp; the six core modules</h2>
+  <div class="sec-rule"></div>
+
+  <div class="callout">
+    <strong>Operating principle (your instinct, sharpened):</strong> TenderMaster is <em>not</em> a chat assistant. It is a <strong>verdict-and-checklist engine</strong>. It reads a tender and tells the firm three things in order: <b>(1) Can you bid? (2) What do you need? (3) Here is your finished package.</b> Conversation is a tool inside that flow, never the product.
+  </div>
+
+  <h3>The six core modules</h3>
+  <div class="grid2">
+    <div class="card glow"><span class="pill core">Module 1</span><h4>Company Knowledge Graph</h4><p class="muted">An extensive onboarding builds a living, structured profile of the firm — registrations, financials, projects, people, equipment, documents. Everything downstream reads from this. <em>This is the asset.</em></p></div>
+    <div class="card glow"><span class="pill core">Module 2</span><h4>Tender Reader &amp; Extractor</h4><p class="muted">Upload/import a tender PDF → AI returns a structured brief: scope, deadline, required category, securities, evaluation weights, and every requirement as a discrete item.</p></div>
+    <div class="card glow"><span class="pill core">Module 3</span><h4>Eligibility / Go–No-Go Engine</h4><p class="muted">Cross-checks tender hard-gates against the Knowledge Graph → a clear verdict: <b>Eligible / Eligible-with-gaps / Not eligible</b>, with the exact reasons and a predicted technical score.</p></div>
+    <div class="card glow"><span class="pill core">Module 4</span><h4>Dynamic Document Checklist</h4><p class="muted">Per-tender checklist; each row has status (have / missing / expired), an <b>upload</b> slot, auto-fill from the graph, and an <b>"Ask AI to help me acquire this"</b> action.</p></div>
+    <div class="card glow"><span class="pill core">Module 5</span><h4>Compiled PDF Generator</h4><p class="muted">One click → a correctly-ordered, indexed, bookmarked submission PDF (Envelope A), plus an optional <b>"edge" section</b> of extra strengths not required but likely to win marks.</p></div>
+    <div class="card glow"><span class="pill core">Module 6</span><h4>ERP · Reminders · History</h4><p class="muted">Tracks every live tender, deadline, security expiry; nudges the user ("did you submit?", "deadline in 48h", "licence expires in 30d"); archives every past tender with outcome.</p></div>
+  </div>
+
+  <h3>How they connect</h3>
+  <div class="flow">
+    <div class="step"><div class="num">→</div><div><b>Knowledge Graph</b> feeds <b>Eligibility</b>, <b>Checklist auto-fill</b>, and <b>PDF generation</b>.</div></div>
+    <div class="step"><div class="num">→</div><div><b>Tender Reader</b> output drives the <b>Eligibility verdict</b> and the <b>Checklist contents</b>.</div></div>
+    <div class="step"><div class="num">→</div><div><b>ERP</b> wraps everything in time — deadlines, reminders — and the <b>History/feedback loop</b> teaches the graph what wins.</div></div>
+  </div>
+
+  <span class="pagelabel">Part B · The Product</span>
+  <span class="pagenum">07</span>
+</section>
+
+<!-- ============ PART B.6 ============ -->
+<section class="page">
+  <div class="eyebrow">Part B · The Product</div>
+  <h2>6 · The Company Knowledge Graph (onboarding)</h2>
+  <div class="sec-rule"></div>
+  <p>This is the heart of the moat. The onboarding is <strong>deliberately thorough</strong> — a one-time, guided, multi-session intake that produces a structured profile rich enough that the AI never has to ask the firm a basic question again. Below is the full data model the MVP should capture.</p>
+
+  <div class="grid2">
+    <div class="card"><h4>1 · Legal &amp; Identity</h4><ul class="tight">
+      <li>Registered name, brand name, type (Pvt Ltd / sole / partnership / JV)</li>
+      <li>SECP reg #, incorporation date</li>
+      <li>NTN, STRN, filer status</li>
+      <li>Registered &amp; site addresses, contacts</li>
+      <li>Authorised signatories + power of attorney</li>
+    </ul></div>
+    <div class="card"><h4>2 · Licences &amp; Registrations</h4><ul class="tight">
+      <li>PEC category, licence #, <b>validity / expiry</b></li>
+      <li>Agency enlistments (NHA, WAPDA, C&amp;W, cantonments…)</li>
+      <li>Sector regs (NEPRA, AEDB, PSQCA), ISO certs</li>
+      <li>Chamber of commerce membership</li>
+    </ul></div>
+    <div class="card"><h4>3 · Financial Profile</h4><ul class="tight">
+      <li>Annual turnover (last 3–5 yrs)</li>
+      <li>Audited statements, auditor name</li>
+      <li>Bank(s), line of credit, available limit</li>
+      <li>Working capital, net worth, key ratios</li>
+      <li>Bid-security capacity</li>
+    </ul></div>
+    <div class="card"><h4>4 · Experience / Projects</h4><ul class="tight">
+      <li>Per project: name, client, value, scope, sector</li>
+      <li>Start/end dates, status, role (prime/sub/JV)</li>
+      <li>Completion certificate (uploaded)</li>
+      <li>Tags: discipline, capacity (MW, km, m³…)</li>
+      <li>Work-in-hand / current commitments</li>
+    </ul></div>
+    <div class="card"><h4>5 · People &amp; Capability</h4><ul class="tight">
+      <li>Key personnel: name, role, qualification, PEC reg, years exp.</li>
+      <li>CVs (uploaded, parsed)</li>
+      <li>Org chart / total headcount by discipline</li>
+      <li>In-house disciplines vs outsourced</li>
+    </ul></div>
+    <div class="card"><h4>6 · Plant, Equipment &amp; Documents</h4><ul class="tight">
+      <li>Owned/leased equipment schedule (type, qty, capacity)</li>
+      <li>Document vault: every certificate, affidavit template, signed form</li>
+      <li>Reusable boilerplate: methodology, HSE policy, QA/QC plan</li>
+      <li>Logos, letterhead, stamps for generated PDFs</li>
+    </ul></div>
+  </div>
+
+  <div class="callout tip">
+    <strong>Make onboarding feel like progress, not a tax.</strong> Show a live <em>"Tender Readiness Score"</em> that climbs as the firm fills the graph — e.g. <b>"You're 78% ready. Add 2 completion certificates to unlock bids up to Rs 400M."</b> Every field they add visibly increases the tenders they can win. That turns a chore into a game and silently builds your moat.
+  </div>
+
+  <p class="muted" style="font-size:11px"><b>Design note:</b> store everything as <em>typed, queryable entities</em> (not free text) — a project is a row with value/sector/dates, not a paragraph. That is what lets the Eligibility Engine do real matching and what a copycat can't reproduce without re-collecting all the data.</p>
+
+  <span class="pagelabel">Part B · The Product</span>
+  <span class="pagenum">08</span>
+</section>
+
+<!-- ============ PART B.6b — readiness visual ============ -->
+<section class="page">
+  <div class="eyebrow">Part B · The Product</div>
+  <h2>6 · (cont.) Turning the graph into instant answers</h2>
+  <div class="sec-rule"></div>
+  <p>Once the graph exists, the same data answers many questions automatically. One profile, many derived outputs:</p>
+
+  <div class="layer"><b>Eligibility match</b> → tender hard-gates vs graph → pass/fail per gate</div>
+  <div class="layer"><b>Auto-filled forms</b> → bid form, qualification forms, personnel &amp; equipment schedules pull straight from entities</div>
+  <div class="layer"><b>Predicted score</b> → graph mapped onto the tender's evaluation weights → "≈72/100, here's how to reach 84"</div>
+  <div class="layer"><b>Gap list</b> → exactly which documents/credentials are missing or expired for <em>this</em> tender</div>
+  <div class="layer"><b>The winning "edge" pack</b> → strengths in the graph that aren't required but score marks, surfaced automatically</div>
+  <div class="layer"><b>Capacity ceiling</b> → "with your current category &amp; turnover you can safely bid up to Rs X"</div>
+
+  <h3>The "Ask AI to help me acquire this" action</h3>
+  <p>For any missing checklist item, a contextual helper that does <em>specific</em>, useful things — not generic chat:</p>
+  <div class="grid2">
+    <div class="card"><h4>It explains</h4><p class="muted">"This tender needs a non-blacklisting affidavit on Rs 100 stamp paper. Here's the exact wording and who must sign it."</p></div>
+    <div class="card"><h4>It generates</h4><p class="muted">Drafts the affidavit / integrity pact / covering letter / methodology pre-filled from the graph, ready to print &amp; sign.</p></div>
+    <div class="card"><h4>It routes</h4><p class="muted">"A bank guarantee for bid security is issued by your bank against margin. Steps: 1… 2… Typical time: 2–3 days — start now, deadline is in 9 days."</p></div>
+    <div class="card"><h4>It reuses</h4><p class="muted">"You already uploaded this completion certificate for Tender #14 — attach the same one?"</p></div>
+  </div>
+
+  <span class="pagelabel">Part B · The Product</span>
+  <span class="pagenum">09</span>
+</section>
+
+<!-- ============ PART B.7 — user journey ============ -->
+<section class="page">
+  <div class="eyebrow">Part B · The Product</div>
+  <h2>7 · End-to-end user journey</h2>
+  <div class="sec-rule"></div>
+  <p>What a user actually experiences, from cold signup to a submitted bid and beyond.</p>
+
+  <div class="flow">
+    <div class="step"><div class="num">1</div><div><b>Guided onboarding.</b> Firm builds its Knowledge Graph over a few sittings. Readiness Score climbs to, say, 85%.</div></div>
+    <div class="step"><div class="num">2</div><div><b>New tender in.</b> User uploads a tender PDF (or it's auto-pulled from EPADS/PPRA in a later version). AI parses it in ~1 minute.</div></div>
+    <div class="step"><div class="num">3</div><div><b>Verdict screen.</b> Big, unambiguous: <span style="color:var(--green)">✓ Eligible</span> / <span style="color:var(--gold)">▲ Eligible with 3 gaps</span> / <span style="color:var(--red)">✕ Not eligible (PEC C-4 required, you hold C-5)</span> — plus a one-paragraph plain-language tender summary and predicted score.</div></div>
+    <div class="step"><div class="num">4</div><div><b>Checklist appears.</b> Auto-populated. Green = already in your vault, amber = expired/needs refresh, red = missing. Each red row has Upload + "Ask AI to acquire."</div></div>
+    <div class="step"><div class="num">5</div><div><b>Fill the gaps.</b> User uploads or generates the missing pieces; AI validates each (right category? in date? right name?).</div></div>
+    <div class="step"><div class="num">6</div><div><b>Generate package.</b> One click → ordered, indexed, bookmarked submission PDF + optional edge pack. Preview, then download.</div></div>
+    <div class="step"><div class="num">7</div><div><b>Track &amp; submit.</b> Tender moves to "Ready." Reminders fire toward the deadline. User marks it <b>Submitted</b>.</div></div>
+    <div class="step"><div class="num">8</div><div><b>Close the loop.</b> Later, AI asks the outcome (Won / Lost / Shortlisted) and why. That feeds history + the learning loop.</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>The "wow" moment to nail in the demo:</strong> upload a real 200-page tender, and within 90 seconds the user sees a clear <em>Eligible / Not-eligible</em> verdict and a complete checklist with half the rows already green from their vault. If that lands, the product sells itself.
+  </div>
+
+  <span class="pagelabel">Part B · The Product</span>
+  <span class="pagenum">10</span>
+</section>
+
+<!-- ============ PART C — MOAT ============ -->
+<section class="page">
+  <div class="eyebrow">Part C · The Moat</div>
+  <h2>8 · Seven layers that make it hard to copy</h2>
+  <div class="sec-rule"></div>
+  <p>A UI is copyable in a weekend. <strong>Accumulated, structured, proprietary intelligence is not.</strong> The defensibility comes from stacking these — any one is weak; together they compound.</p>
+
+  <div class="moat-row"><div class="idx">1</div><div><span class="pill moat">Data lock-in</span> <b>The Company Knowledge Graph.</b> Once a firm has spent hours encoding every project, certificate and ratio, switching means re-doing all of it. The data <em>is</em> the switching cost. The richer the graph, the stickier the user.</div></div>
+
+  <div class="moat-row"><div class="idx">2</div><div><span class="pill moat">Domain rule engine</span> <b>A codified Pakistani-procurement rulebook.</b> PPRA/PEC rules, category ceilings, FIDIC quirks, agency-specific forms, affidavit wordings — encoded as a maintained, versioned rules layer. This is hundreds of hours of domain capture a generic "AI RFP tool" doesn't have.</div></div>
+
+  <div class="moat-row"><div class="idx">3</div><div><span class="pill moat">Agency intelligence</span> <b>Per-organisation tender memory.</b> The AI learns how <em>each procuring agency</em> (NHA vs WAPDA vs a cantonment board) words requirements, which documents they always demand, how they score. Every tender processed sharpens this. A copycat starts from zero.</div></div>
+
+  <div class="moat-row"><div class="idx">4</div><div><span class="pill moat">Reference data</span> <b>Centrally-maintained ground truth.</b> Live category ceilings, current fee structures, standard form templates, blacklist watchlists — you maintain them once, every customer benefits instantly. Becomes the authoritative source firms trust.</div></div>
+
+  <div class="moat-row"><div class="idx">5</div><div><span class="pill moat">Win/loss loop</span> <b>Outcome learning.</b> Because the ERP captures what was bid and what won/lost, the system learns which profiles &amp; framings win which tenders — and can advise "firms like you that won this agency added X." Proprietary, compounding, impossible to fake on day one.</div></div>
+
+  <div class="moat-row"><div class="idx">6</div><div><span class="pill moat">Workflow depth</span> <b>It owns the whole lifecycle.</b> Discovery → eligibility → compile → submit → remind → outcome. A clone can copy one screen; replicating the entire integrated loop (plus reminders that actually fire and a PDF engine that gets ordering right) is a real product, not a wrapper.</div></div>
+
+  <div class="moat-row" style="border-bottom:none"><div class="idx">7</div><div><span class="pill moat">Trust &amp; record</span> <b>System of record.</b> Once it holds a firm's entire tender history, securities calendar and document vault, it becomes the place they <em>operate from</em>. Leaving means losing their institutional memory. That's the deepest moat of all.</div></div>
+
+  <div class="callout warn">
+    <strong>Strategic warning:</strong> the moat is <em>earned over time</em>, not shipped on day one. The MVP's job is to start the flywheel — get firms to pour data in and run tenders through — so layers 1, 3, and 5 begin compounding immediately. Build the data-capture loops first; the defensibility follows.
+  </div>
+
+  <span class="pagelabel">Part C · The Moat</span>
+  <span class="pagenum">11</span>
+</section>
+
+<!-- ============ PART D.9 — MVP scope ============ -->
+<section class="page">
+  <div class="eyebrow">Part D · Build It</div>
+  <h2>9 · MVP scope &amp; AI architecture</h2>
+  <div class="sec-rule"></div>
+  <p>Ruthless scoping. Ship the wedge — eligibility + checklist + compiled PDF — backed by a real knowledge graph. Everything else waits.</p>
+
+  <div class="grid2">
+    <div class="card"><h4 style="color:var(--green)">In the MVP <span class="pill mvp">v1</span></h4><ul class="check">
+      <li>Guided onboarding → Knowledge Graph</li>
+      <li>Tender PDF upload + AI extraction</li>
+      <li>Eligibility / Go–No-Go verdict + plain summary</li>
+      <li>Dynamic checklist (have/missing/expired)</li>
+      <li>Per-row upload + "Ask AI to acquire"</li>
+      <li>Document generation (affidavits, letters, schedules)</li>
+      <li>One-click compiled submission PDF + edge pack</li>
+      <li>Tender dashboard + deadline reminders (email)</li>
+      <li>Tender history with outcomes</li>
+      <li>Single plan, $150/mo, dark-purple theme</li>
+    </ul></div>
+    <div class="card"><h4 style="color:var(--gold)">Deliberately later <span class="pill later">v2+</span></h4><ul class="tight">
+      <li>Auto-discovery: scrape EPADS/PPRA &amp; match to firm</li>
+      <li>Agency-intelligence &amp; win/loss recommendation engine</li>
+      <li>Predicted-score optimiser ("reach 84/100")</li>
+      <li>Multi-user / team roles &amp; approvals</li>
+      <li>WhatsApp/SMS reminders</li>
+      <li>BOQ pricing assistance (financial envelope)</li>
+      <li>Direct e-submission integrations</li>
+      <li>Mobile app</li>
+    </ul></div>
+  </div>
+
+  <h3>AI architecture (how the intelligence is built)</h3>
+  <div class="layer"><b>1 · Ingestion &amp; OCR.</b> Tender PDF → text + layout. Many Pakistani tenders are scanned — OCR (and Urdu/English handling) is mandatory, not optional.</div>
+  <div class="layer"><b>2 · Structured extraction.</b> LLM with a strict schema pulls requirements into typed fields (deadline, PEC category, securities, each eligibility gate, evaluation weights). Use function-calling / JSON-schema output — not free-form.</div>
+  <div class="layer"><b>3 · Retrieval (RAG).</b> Index the company graph + your domain rulebook + agency memory; retrieve the relevant slices to ground every verdict and generated document. <em>Grounded, cited, low-hallucination.</em></div>
+  <div class="layer"><b>4 · Rules + reasoning split.</b> Hard gates run through deterministic rules (category ≥ X is code, not vibes); only soft judgement &amp; drafting use the LLM. This keeps eligibility verdicts <em>trustworthy</em>.</div>
+  <div class="layer"><b>5 · Generation.</b> LLM drafts documents from graph data into your templates; a deterministic engine assembles the final ordered PDF.</div>
+  <div class="layer"><b>6 · Feedback capture.</b> Outcomes &amp; corrections logged → improves extraction prompts, rules, and agency memory over time.</div>
+
+  <div class="callout tip"><strong>Model choice:</strong> default to the latest, most capable Claude models (e.g. Claude Opus 4.8 for hard extraction/reasoning, a faster Claude for routine drafting) behind a provider-agnostic layer. Reliable structured extraction and grounded generation matter more here than raw speed — a wrong eligibility verdict destroys trust.</div>
+
+  <span class="pagelabel">Part D · Build It</span>
+  <span class="pagenum">12</span>
+</section>
+
+<!-- ============ PART D.10 — data model + stack ============ -->
+<section class="page">
+  <div class="eyebrow">Part D · Build It</div>
+  <h2>10 · Data model &amp; suggested stack</h2>
+  <div class="sec-rule"></div>
+
+  <h3>Core entities (the schema behind the graph)</h3>
+  <table>
+    <tr><th>Entity</th><th>Key fields</th><th>Feeds</th></tr>
+    <tr><td><b>Company</b></td><td>legal id, type, addresses, NTN/STRN, filer status</td><td>everything</td></tr>
+    <tr><td><b>Credential</b></td><td>type (PEC/ISO/…), number, category, issue/expiry, file</td><td>eligibility, reminders</td></tr>
+    <tr><td><b>Project</b></td><td>client, value, sector, role, dates, capacity, completion cert</td><td>experience gates, score</td></tr>
+    <tr><td><b>Person</b></td><td>role, qualification, PEC reg, years, CV</td><td>personnel scoring</td></tr>
+    <tr><td><b>Equipment</b></td><td>type, qty, owned/leased, capacity</td><td>equipment schedule</td></tr>
+    <tr><td><b>Financial</b></td><td>year, turnover, net worth, ratios, audited file</td><td>financial gates</td></tr>
+    <tr><td><b>Document</b></td><td>type, file, version, linked entity</td><td>vault, checklist fill</td></tr>
+    <tr><td><b>Tender</b></td><td>agency, value, deadline, required category, extracted requirements (JSON), evaluation weights</td><td>eligibility, checklist</td></tr>
+    <tr><td><b>Submission</b></td><td>tender ref, checklist state, generated PDF, status, outcome, reason</td><td>history, learning loop</td></tr>
+    <tr><td><b>Requirement</b></td><td>tender ref, text, type (gate/doc/scored), matched-to, status</td><td>checklist rows</td></tr>
+  </table>
+
+  <h3>Suggested stack (lean, MVP-appropriate)</h3>
+  <div class="grid3">
+    <div class="card"><h4>Frontend</h4><p class="muted">Next.js / React · Tailwind (dark-purple design system) · component lib for forms-heavy onboarding</p></div>
+    <div class="card"><h4>Backend</h4><p class="muted">Node/TypeScript or Python (FastAPI) · Postgres (relational graph + JSONB for extracted requirements) · object storage for files</p></div>
+    <div class="card"><h4>AI layer</h4><p class="muted">Claude API for extraction &amp; generation · vector store (pgvector) for RAG · OCR (Textract / Tesseract / Google Vision) · deterministic rules service</p></div>
+    <div class="card"><h4>PDF engine</h4><p class="muted">Headless Chromium / Puppeteer for HTML→PDF · pdf-lib for merge, order, bookmarks, page numbers, index</p></div>
+    <div class="card"><h4>Jobs &amp; reminders</h4><p class="muted">Queue (BullMQ / Celery) · scheduler for deadline &amp; expiry reminders · email (Resend/SES); WhatsApp later</p></div>
+    <div class="card"><h4>Infra &amp; auth</h4><p class="muted">Single-tenant-per-company isolation · auth + RBAC-ready · audit log · encrypted document vault</p></div>
+  </div>
+
+  <div class="callout warn"><strong>Non-negotiable:</strong> the vault holds a firm's most sensitive papers. Encryption at rest, strict per-company isolation, and an audit trail are <em>table stakes for trust</em> — and a selling point against a fly-by-night clone.</div>
+
+  <span class="pagelabel">Part D · Build It</span>
+  <span class="pagenum">13</span>
+</section>
+
+<!-- ============ PART E.11 — recommendations ============ -->
+<section class="page">
+  <div class="eyebrow">Part E · Sharpen It</div>
+  <h2>11 · My recommendations to make it win more</h2>
+  <div class="sec-rule"></div>
+  <p>You asked for suggestions. Here are the ones I'd fight for — ordered by impact.</p>
+
+  <h4>① Lead with the verdict, not the chat.</h4>
+  <p class="muted">Your instinct to avoid "personal assistant" framing is right and is your differentiator. Make the <b>Eligibility verdict the hero screen</b>. Every competitor is a chatbot; you're a decision engine. Sell certainty.</p>
+
+  <h4>② Make onboarding a scored, staged game.</h4>
+  <p class="muted">A live <em>Tender Readiness Score</em> + "unlock bids up to Rs X" turns the tedious data capture into visible progress — and it's exactly what builds the moat. Don't bury it; celebrate it.</p>
+
+  <h4>③ Ship a "predicted score + gap-to-win."</h4>
+  <p class="muted">Going beyond pass/fail to <b>"you'd score ~72/100; add these 3 things to reach 84"</b> is a feature no generic tool offers and is hard to copy because it needs the evaluation-weight intelligence. High-value, defensible.</p>
+
+  <h4>④ Capture outcomes religiously.</h4>
+  <p class="muted">The win/loss loop is your compounding advantage. Make marking outcomes frictionless (one tap from a reminder). Every outcome makes the next firm's advice better — that's the flywheel.</p>
+
+  <h4>⑤ The "edge pack" is your emotional hook.</h4>
+  <p class="muted">Auto-surfacing <em>extra, non-required strengths that score marks</em> is the part that makes a firm feel the AI is fighting <em>for</em> them. Lean into it — it's also a natural upsell story later.</p>
+
+  <h4>⑥ Start single-sector, go deep, then widen.</h4>
+  <p class="muted">Nail <b>EPC/construction in Pakistan</b> before touching other sectors or countries. Depth is the moat; breadth dilutes it early. The same engine extends to IT, supplies, services tenders later — but only after you own one vertical.</p>
+
+  <h4>⑦ Treat reminders as a product, not a feature.</h4>
+  <p class="muted">Missed deadlines are the #1 silent killer. Aggressive, smart, multi-channel nudges (deadline, security expiry, validity lapse, licence renewal) alone can justify the subscription. This is your retention engine.</p>
+
+  <div class="callout tip"><strong>One more:</strong> add a lightweight <em>"Tender Health"</em> badge per live bid (e.g. 6/9 documents ready, 4 days left, on track / at risk). Founders of EPC firms manage by glance — give them a dashboard they check every morning, and you become indispensable.</div>
+
+  <span class="pagelabel">Part E · Sharpen It</span>
+  <span class="pagenum">14</span>
+</section>
+
+<!-- ============ PART E.12 — pricing, roadmap, risks ============ -->
+<section class="page">
+  <div class="eyebrow">Part E · Sharpen It</div>
+  <h2>12 · Pricing logic, roadmap &amp; risks</h2>
+  <div class="sec-rule"></div>
+
+  <h3>The single $150/month plan</h3>
+  <p>One plan keeps positioning sharp and sales simple. To make $150/mo feel obviously worth it, anchor it against the cost of <em>one</em> lost winnable tender (often crores of rupees) and the senior-engineer hours saved per bid. Watch your <b>per-tender AI/OCR cost</b> — heavy tenders are token-expensive; a soft fair-use cap (e.g. N tenders/month, generous) protects margin without adding plan complexity.</p>
+  <div class="kpi">
+    <div class="card"><div class="num">$150</div><div class="lbl">per month, one plan</div></div>
+    <div class="card"><div class="num">1 plan</div><div class="lbl">no tier confusion</div></div>
+    <div class="card"><div class="num">ROI</div><div class="lbl">= 1 saved bid</div></div>
+  </div>
+
+  <h3>Phased roadmap</h3>
+  <table>
+    <tr><th>Phase</th><th>Focus</th><th>Outcome</th></tr>
+    <tr><td><b>0 · Foundation</b></td><td>Knowledge Graph + onboarding + document vault</td><td>The asset exists; data starts flowing in</td></tr>
+    <tr><td><b>1 · Wedge (MVP)</b></td><td>Tender reader + eligibility + checklist + compiled PDF + reminders</td><td>Sellable product; flywheel starts</td></tr>
+    <tr><td><b>2 · Intelligence</b></td><td>Predicted score, agency memory, win/loss loop</td><td>Moat deepens; advice gets unique</td></tr>
+    <tr><td><b>3 · Reach</b></td><td>Auto-discovery, team mode, more sectors</td><td>Scale &amp; expansion</td></tr>
+  </table>
+
+  <h3>Top risks &amp; how to manage them</h3>
+  <table>
+    <tr><th>Risk</th><th>Mitigation</th></tr>
+    <tr><td>Wrong eligibility verdict destroys trust</td><td>Deterministic rules for hard gates; always show <em>why</em>; "verify-before-submit" disclaimer; human-in-loop on edge cases</td></tr>
+    <tr><td>Scanned/messy tender PDFs break extraction</td><td>Strong OCR; confidence flags; let users confirm/correct extracted fields (which also feeds learning)</td></tr>
+    <tr><td>Per-tender AI cost erodes margin</td><td>Cache, chunk smartly, route easy steps to cheaper models, fair-use cap</td></tr>
+    <tr><td>Slow onboarding → churn before value</td><td>Readiness Score, templates, import helpers, "minimum viable graph" to run a first tender fast</td></tr>
+    <tr><td>Data sensitivity / breach</td><td>Encryption, isolation, audit log, clear data policy — turn security into a selling point</td></tr>
+    <tr><td>Copycats</td><td>Race to accumulate graph + agency memory + outcomes; depth in one vertical; own the system-of-record relationship</td></tr>
+  </table>
+
+  <span class="pagelabel">Part E · Sharpen It</span>
+  <span class="pagenum">15</span>
+</section>
+
+<!-- ============ APPENDIX ============ -->
+<section class="page">
+  <div class="eyebrow">Appendix A</div>
+  <h2>A · The onboarding questionnaire</h2>
+  <div class="sec-rule"></div>
+
+  <h3>A · The onboarding questionnaire (MVP intake)</h3>
+  <div class="grid2">
+    <div class="card"><h4>Section 1 — Identity &amp; legal</h4><ul class="tight">
+      <li>Registered &amp; brand name, entity type</li>
+      <li>SECP reg #, incorporation date</li>
+      <li>NTN, STRN, current filer status</li>
+      <li>Head office &amp; site addresses, key contacts</li>
+      <li>Authorised signatory + power of attorney</li>
+    </ul></div>
+    <div class="card"><h4>Section 2 — Licences</h4><ul class="tight">
+      <li>PEC category + licence # + expiry (upload)</li>
+      <li>Agency enlistments (which, level)</li>
+      <li>Sector regs / ISO (upload each)</li>
+      <li>Chamber membership</li>
+    </ul></div>
+    <div class="card"><h4>Section 3 — Financials</h4><ul class="tight">
+      <li>Turnover, last 3–5 yrs (upload audited a/cs)</li>
+      <li>Bank(s) + line of credit + available limit</li>
+      <li>Net worth, working capital</li>
+      <li>Max bid-security you can currently post</li>
+    </ul></div>
+    <div class="card"><h4>Section 4 — Projects (repeatable)</h4><ul class="tight">
+      <li>Name, client, value, sector, role</li>
+      <li>Start/end, status, capacity metric</li>
+      <li>Completion certificate (upload)</li>
+      <li>Current work-in-hand</li>
+    </ul></div>
+    <div class="card"><h4>Section 5 — People &amp; plant</h4><ul class="tight">
+      <li>Key personnel: role, qualification, PEC reg, years (upload CV)</li>
+      <li>Headcount by discipline</li>
+      <li>Owned/leased equipment schedule</li>
+    </ul></div>
+    <div class="card"><h4>Section 6 — Vault &amp; branding</h4><ul class="tight">
+      <li>Standard affidavits, integrity-pact templates</li>
+      <li>Methodology / HSE / QA-QC boilerplate</li>
+      <li>Logo, letterhead, stamp, signature image</li>
+    </ul></div>
+  </div>
+
+  <span class="pagelabel">Appendix A</span>
+  <span class="pagenum">16</span>
+</section>
+
+<!-- ============ APPENDIX B ============ -->
+<section class="page">
+  <div class="eyebrow">Appendix B</div>
+  <h2>B · Eligibility scorecard &amp; closing note</h2>
+  <div class="sec-rule"></div>
+
+  <h3>B · Sample eligibility scorecard (what the engine outputs)</h3>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--green)"></span> Pass</span>
+    <span><span class="dot" style="background:var(--gold)"></span> Gap — fixable</span>
+    <span><span class="dot" style="background:var(--red)"></span> Fail — hard stop</span>
+  </div>
+  <table>
+    <tr><th>Gate</th><th>Tender requires</th><th>Firm has</th><th>Result</th></tr>
+    <tr><td>PEC category</td><td>≥ C-4</td><td>C-3</td><td><span style="color:var(--green)">● Pass</span></td></tr>
+    <tr><td>Active filer</td><td>Yes</td><td>Yes</td><td><span style="color:var(--green)">● Pass</span></td></tr>
+    <tr><td>Avg. turnover (3 yr)</td><td>≥ Rs 300M</td><td>Rs 410M</td><td><span style="color:var(--green)">● Pass</span></td></tr>
+    <tr><td>Similar projects</td><td>3 × ≥ Rs 150M</td><td>2 on file</td><td><span style="color:var(--gold)">● Gap — add 1 completion cert</span></td></tr>
+    <tr><td>Bid security</td><td>Rs 12M BG</td><td>Capacity Rs 25M</td><td><span style="color:var(--green)">● Pass</span></td></tr>
+    <tr><td>Non-blacklisting affidavit</td><td>Required</td><td>Not generated</td><td><span style="color:var(--gold)">● Gap — AI can draft now</span></td></tr>
+    <tr><td>ISO 9001</td><td>Mandatory</td><td>Not held</td><td><span style="color:var(--red)">● Fail — cannot satisfy in time</span></td></tr>
+  </table>
+  <p class="muted" style="font-size:11px">Verdict line the user sees: <b style="color:var(--gold)">"Eligible with 2 fixable gaps — predicted technical score ≈ 74/100. Resolve both to bid safely. One hard requirement (ISO 9001) is unmet; review before proceeding."</b></p>
+
+  <div class="callout" style="margin-top:14px">
+    <strong>Closing note.</strong> This blueprint is intentionally deep on the <em>domain</em> and the <em>moat</em>, because that — not the UI — is where this product is won. Build the data-capture flywheel first, keep the MVP to the wedge (eligibility → checklist → compiled PDF), and let agency-intelligence and the win/loss loop compound. That is how a $150/mo single-plan SaaS becomes something nobody can casually clone.
+  </div>
+
+  <span class="pagelabel">Appendix B</span>
+  <span class="pagenum">17</span>
+</section>
+
+</body>
+</html>
