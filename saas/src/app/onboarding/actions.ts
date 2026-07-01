@@ -48,13 +48,29 @@ export async function saveIdentity(formData: FormData): Promise<void> {
 // ---- Step 2: credentials ----
 export async function addCredential(formData: FormData): Promise<void> {
   const kind = str(formData, 'kind') ?? 'OTHER';
+  const label = str(formData, 'label') ?? kind;
+
+  let documentId: string | undefined;
+  const file = formData.get('file') as File | null;
+  const companyId = store.getCompany()?.id;
+  if (file && file.size > 0 && companyId) {
+    const bytes = Buffer.from(await file.arrayBuffer());
+    await fs.mkdir(UPLOAD_DIR, { recursive: true });
+    const safe = `cred-${Date.now()}-${file.name.replace(/[^\w.\-]/g, '_')}`;
+    const filePath = path.join(UPLOAD_DIR, safe);
+    await fs.writeFile(filePath, bytes);
+    const doc = store.createDocument({ companyId, kind: 'certificate', title: label, fileName: file.name, filePath, mimeType: file.type, sizeBytes: file.size });
+    documentId = doc.id;
+  }
+
   store.addCredential({
     kind,
-    label: str(formData, 'label') ?? kind,
+    label,
     number: str(formData, 'number'),
     category: kind === 'PEC' ? str(formData, 'category') : null,
     expiryDate: str(formData, 'expiryDate'),
     status: 'active',
+    documentId,
   });
   refresh();
   redirect('/onboarding?step=2');

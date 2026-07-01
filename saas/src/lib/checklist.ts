@@ -20,8 +20,11 @@ const CRED_MATCHERS: { test: RegExp; kind: string; help: string }[] = [
   { test: /iso/i, kind: 'ISO', help: 'Attach your ISO certificate(s).' },
 ];
 
-// Documents the AI can generate from the company profile.
-const GENERATABLE = /letter of technical bid|general information|cover letter|affidavit|integrity pact/i;
+// Documents the AI can generate from the company profile. Exported so the PDF
+// builder can draft these on the fly instead of treating them as a hard gap —
+// checklist status stays "missing" (nothing signed yet), but the compiled
+// submission should still contain a ready-to-sign draft, not a blank page.
+export const GENERATABLE = /letter of technical bid|general information|cover letter|affidavit|integrity pact/i;
 // Per-tender instruments the user must acquire externally.
 const ACQUIRE = /bid security|bank guarantee/i;
 

@@ -96,6 +96,87 @@ export async function draftDocument(prompt: string): Promise<string> {
   return textOf(resp);
 }
 
+interface DraftCompany {
+  legalName: string;
+  headOffice?: string | null;
+  phone?: string | null;
+  email?: string | null;
+}
+interface DraftTender {
+  title: string;
+  agency?: string | null;
+  estimatedCostPkr?: number | null;
+  validityDays?: number | null;
+}
+
+/**
+ * Draft the text body for a checklist document (letter, affidavit, etc.), ready
+ * to print on letterhead and sign. Uses Claude when available; otherwise falls
+ * back to a sensible deterministic template so the PDF builder always has
+ * clean, print-ready text rather than a raw prompt dump.
+ */
+export async function draftChecklistDocument(company: DraftCompany, tender: DraftTender, label: string): Promise<string> {
+  if (aiEnabled()) {
+    const prompt = `Draft the "${label}" document for a Pakistani EPC tender submission, ready to print on the bidder's letterhead.
+Bidder: ${company.legalName}${company.headOffice ? `, ${company.headOffice}` : ''}.
+Tender: ${tender.title}${tender.agency ? ` (Employer: ${tender.agency})` : ''}.
+${tender.estimatedCostPkr ? `Estimated cost: Rs ${Math.round(tender.estimatedCostPkr).toLocaleString()}.` : ''}
+${tender.validityDays ? `Bid validity: ${tender.validityDays} days.` : ''}
+Write ONLY the document body text — no explanations, no markdown, no preamble like "Here is...". Keep it under 250 words, formal register, ready for signature.`;
+    try {
+      const text = await draftDocument(prompt);
+      if (text && !text.startsWith('[Mock draft')) return text.trim();
+    } catch {
+      // fall through to template
+    }
+  }
+  return templateFor(label, company, tender);
+}
+
+function templateFor(label: string, company: DraftCompany, tender: DraftTender): string {
+  const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  if (/letter of technical bid|bid form|covering letter/i.test(label)) {
+    return [
+      'To,', 'The Procuring Officer,', tender.agency ?? '', '',
+      `Subject: ${tender.title}`, '',
+      `Dear Sir,`, '',
+      `I/We, ${company.legalName}, having examined the tender documents and conditions of contract for the above-named work, hereby offer to execute, complete and maintain the whole of the said work in accordance with the tender documents.`, '',
+      `We agree to abide by this tender and keep it valid for the period stated in the tender documents from the date of submission, and it shall remain binding upon us until a formal contract is prepared and executed.`, '',
+      `We understand you are not bound to accept the lowest or any tender received.`, '',
+      'Yours faithfully,', '', '', '_______________________', '(Authorised Signatory)', company.legalName, `Dated: ${today}`,
+    ].join('\n');
+  }
+  if (/general information/i.test(label)) {
+    return [
+      'BIDDER GENERAL INFORMATION', '',
+      `Name of Firm: ${company.legalName}`,
+      `Head Office: ${company.headOffice ?? '—'}`,
+      `Phone: ${company.phone ?? '—'}`,
+      `Email: ${company.email ?? '—'}`, '',
+      '(Complete remaining fields — registration category, incorporation details and representative information — from the Company Profile before submission.)',
+    ].join('\n');
+  }
+  if (/non-blacklisting|affidavit/i.test(label)) {
+    return [
+      'AFFIDAVIT', '',
+      `I, the undersigned, being the authorised representative of ${company.legalName}, do hereby solemnly affirm and declare that our firm has not been blacklisted or debarred by any government department, autonomous body or public sector organisation in Pakistan, and that all information submitted with this tender is true and correct to the best of our knowledge.`, '', '',
+      '_______________________', 'Deponent',
+    ].join('\n');
+  }
+  if (/integrity pact/i.test(label)) {
+    return [
+      'INTEGRITY PACT', '',
+      `${company.legalName} undertakes that it has not obtained or induced the procurement of this contract through any corrupt business practice, and agrees to be bound by the terms of the Integrity Pact as prescribed under the applicable procurement rules.`, '', '',
+      '_______________________', 'Authorised Signatory',
+    ].join('\n');
+  }
+  return [
+    label, '',
+    '(This section could not be auto-drafted. Please attach the actual document, or configure an AI key for automatic drafting.)',
+  ].join('\n');
+}
+
 /** Concatenate all text blocks from a Claude response (SDK-version agnostic). */
 function textOf(resp: any): string {
   const blocks = (resp?.content ?? []) as Array<{ type: string; text?: string }>;

@@ -132,6 +132,12 @@ export interface Tender {
   awardDocId?: string | null;
   submittedAt?: string | null;
   createdAt: string;
+
+  // Compiled submission package (generated PDF)
+  submissionPdfPath?: string | null;
+  submissionGeneratedAt?: string | null;
+  submissionPageCount?: number | null;
+  submissionMissingCount?: number | null;
 }
 
 export interface Reminder {

@@ -8,6 +8,7 @@ import { requireCompany } from '@/lib/company';
 import { extractTender } from '@/lib/ai';
 import { evaluateEligibility } from '@/lib/eligibility';
 import { buildChecklist } from '@/lib/checklist';
+import { buildSubmissionPdf } from '@/lib/pdfBuilder';
 import { parseDate } from '@/lib/util';
 import * as store from '@/lib/store';
 
@@ -100,4 +101,27 @@ export async function recomputeReadiness(): Promise<void> {
   store.computeReadiness();
   revalidatePath('/company');
   revalidatePath('/');
+}
+
+/** Compile the checklist into one submission-ready PDF, with stamp & signature on every page. */
+export async function generateSubmissionPdf(tenderId: string): Promise<void> {
+  const company = requireCompany();
+  const tender = store.getTender(tenderId);
+  if (!tender) throw new Error('Tender not found.');
+
+  const documents = store.listDocuments();
+  const result = await buildSubmissionPdf(company, tender, documents);
+
+  await fs.mkdir(UPLOAD_DIR, { recursive: true });
+  const filePath = path.join(UPLOAD_DIR, `submission-${tenderId}-${Date.now()}.pdf`);
+  await fs.writeFile(filePath, result.bytes);
+
+  store.updateTender(tenderId, {
+    submissionPdfPath: filePath,
+    submissionGeneratedAt: new Date().toISOString(),
+    submissionPageCount: result.pageCount,
+    submissionMissingCount: result.missingCount,
+  });
+
+  revalidatePath(`/tenders/${tenderId}`);
 }

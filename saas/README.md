@@ -31,9 +31,10 @@ and one example tender, so every screen is populated immediately. Reset with `np
 
 The app works in **demo mode** without any keys (sample extraction). To read real tender PDFs:
 
-1. Put an **Anthropic API key** in `saas/.env`:
+1. Put an **Anthropic API key** in `saas/.env` (preferred name avoids clashing with any
+   Claude-Code-own auth in shared cloud environments; the plain name also works locally):
    ```
-   ANTHROPIC_API_KEY="sk-ant-..."
+   TENDERMASTER_ANTHROPIC_API_KEY="sk-ant-..."
    ANTHROPIC_MODEL="claude-opus-4-8"   # optional override
    ```
 2. (Production) Provide a **PostgreSQL** connection string and we switch the data layer to Prisma.
@@ -54,6 +55,12 @@ That's all that's needed from your side right now.
   people, financials, and the **stamp + signature** assets.
 - **Lifecycle** — mark submitted / won / lost; reminders for deadlines and licence expiry; an
   outcome-check nudge fires after each deadline.
+- **Compiled submission PDF** — one click builds a print-ready package: a cover page (mirrors the
+  real LDA tender cover), then a labelled divider + content page per checklist item — a real
+  uploaded certificate is merged in, an AI/template-drafted letter is generated for items like the
+  Letter of Technical Bid, or a clear "needs attention" page appears for anything still missing.
+  The company's **stamp and signature are auto-overlaid on every page**. Download from the tender
+  page once generated.
 
 ## Code map
 
@@ -62,13 +69,15 @@ That's all that's needed from your side right now.
 | `src/lib/ai.ts` | Claude PDF extraction + drafting (with mock fallback) |
 | `src/lib/eligibility.ts` | Deterministic hard-gate rules + predicted score |
 | `src/lib/checklist.ts` | Builds the per-tender document checklist |
+| `src/lib/pdfBuilder.ts` | Compiles the submission PDF (cover, dividers, merge/draft, stamp overlay) |
 | `src/lib/pec.ts` | PEC category ladder & "C-6 & above" logic |
 | `src/lib/store.ts` | JSON data store + seed (prod → Prisma/Postgres) |
-| `src/app/` | Dashboard, tender upload, tender detail, company profile |
+| `src/app/` | Dashboard, tender upload, tender detail, company profile, onboarding |
+| `src/app/api/tenders/[id]/pdf` | Download route for the generated submission PDF |
 
 ## Next up (Phase 2 continued)
 
-- **PDF submission builder** with auto stamp + signature on every page.
-- Real multi-tenant **auth & onboarding wizard**.
+- Real multi-tenant **auth**.
 - **OCR/agency intelligence** and the win/loss learning loop.
 - Swap JSON store → **Postgres/Prisma**.
+- Award-letter ingestion (extract Agreement Amount on a win).

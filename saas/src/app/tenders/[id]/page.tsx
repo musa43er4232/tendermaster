@@ -5,6 +5,7 @@ import { VerdictBadge, StatusDot, StatusPill, StatusChip } from '@/components/ui
 import { pkr, pkrM, fmtDate, daysUntil, safeJson } from '@/lib/util';
 import type { VerdictReason } from '@/lib/types';
 import { toggleChecklistItem, setOutcome, setTenderStatus } from '@/app/actions';
+import { GeneratePdfButton } from '@/components/GeneratePdfButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,10 +100,25 @@ export default async function TenderDetail({ params }: { params: { id: string } 
               </li>
             ))}
           </ul>
-          <button className="btn btn-primary mt-4 w-full opacity-60" disabled title="Coming next">
-            Generate submission PDF →
-          </button>
-          <p className="mt-1 text-center text-[11px] text-muted2">PDF builder (with auto stamp &amp; signature) ships next.</p>
+          <div className="mt-4">
+            <GeneratePdfButton tenderId={t.id} />
+          </div>
+
+          {t.submissionPdfPath ? (
+            <div className="mt-3 rounded-lg border border-line bg-white/[0.02] px-3 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="text-xs text-muted">
+                  Generated {fmtDate(t.submissionGeneratedAt)} · {t.submissionPageCount} pages
+                  {!!t.submissionMissingCount && (
+                    <span className="ml-1 text-warn">· {t.submissionMissingCount} page{t.submissionMissingCount === 1 ? '' : 's'} still need{t.submissionMissingCount === 1 ? 's' : ''} attention</span>
+                  )}
+                </div>
+                <a href={`/api/tenders/${t.id}/pdf`} className="btn btn-primary text-xs">⬇ Download PDF</a>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-1 text-center text-[11px] text-muted2">Compiles a print-ready PDF with a cover page, one section per checklist item, and your stamp &amp; signature on every page.</p>
+          )}
         </section>
       </div>
 

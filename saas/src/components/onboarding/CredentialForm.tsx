@@ -41,6 +41,10 @@ export function CredentialForm() {
         <label className="label">Expiry date {isPec ? '(important)' : '(optional)'}</label>
         <input name="expiryDate" type="date" className="input" />
       </div>
+      <div className="sm:col-span-2">
+        <label className="label">Scanned certificate (optional, but needed to include the real document in your compiled submissions)</label>
+        <input type="file" name="file" accept="application/pdf,image/png,image/jpeg" className="input file:mr-3 file:rounded file:border-0 file:bg-purple/20 file:px-3 file:py-1 file:text-purple-soft" />
+      </div>
       <div className="flex items-end sm:col-span-2">
         <button className="btn btn-primary">+ Add registration</button>
       </div>
