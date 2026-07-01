@@ -12,7 +12,7 @@ const LINKS = [
   { href: '/company', label: 'Company' },
 ];
 
-export function Nav({ readiness, aiLive }: { readiness?: number; aiLive?: boolean }) {
+export function Nav({ readiness, aiLive, userEmail }: { readiness?: number; aiLive?: boolean; userEmail?: string | null }) {
   const path = usePathname();
   return (
     <header className="sticky top-0 z-40 border-b border-lineSoft bg-bg/70 backdrop-blur-md">
@@ -50,6 +50,14 @@ export function Nav({ readiness, aiLive }: { readiness?: number; aiLive?: boolea
             >
               {readiness}% ready
             </Link>
+          )}
+          {userEmail && (
+            <form action="/auth/signout" method="post" className="ml-1 hidden items-center gap-2 sm:flex">
+              <span className="max-w-[140px] truncate text-xs text-muted2" title={userEmail}>{userEmail}</span>
+              <button className="rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-muted hover:border-purple hover:text-white" title="Sign out">
+                Sign out
+              </button>
+            </form>
           )}
         </nav>
       </div>

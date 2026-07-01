@@ -48,22 +48,78 @@ ANTHROPIC_MODEL=claude-opus-4-8             # optional
 Without the key the app still runs, in demo mode (sample extraction); the nav
 shows an **"AI demo"** badge instead of **"AI live"**.
 
-### Data (important before real launch)
+## 3. Accounts & billing — Supabase + Stripe
 
-The app currently uses a **local JSON store** (`saas/data/db.json`) for zero-setup
-running. That's perfect for the prototype but is **single-instance and ephemeral**.
-Before onboarding real customers, swap it for **PostgreSQL** (the schema is already
-written in [`saas/docs-schema.prisma`](./saas/docs-schema.prisma), and the model
-shapes in `saas/src/lib/models.ts` match it, so it's a contained change). Uploaded
-files (`saas/uploads/`) should likewise move to object storage (S3/R2).
+Auth, database, storage, and billing are **built and wired**, and stay dormant
+until their keys are present. When you set them, the app requires login and an
+active subscription.
+
+### a) Supabase (auth + database + storage)
+
+1. Create a project at **supabase.com**.
+2. Open **SQL Editor → New query**, paste [`saas/supabase/schema.sql`](./saas/supabase/schema.sql),
+   and **Run**. This creates all tables (one company per user) with Row Level
+   Security so every firm only sees its own data, plus a `subscriptions` table.
+3. **Storage → New bucket** → name it `documents`, set it **Private**. Then
+   uncomment the four storage policies at the bottom of `schema.sql` and run them.
+4. From **Project Settings → API**, copy the values into the env vars below.
+
+### b) Stripe (the $150/mo plan)
+
+1. In Stripe, create a **Product** "TenderMaster" with a **recurring monthly price
+   of $150** → copy its **Price ID** (`price_...`).
+2. Copy your **Secret key** (`sk_...`).
+3. After the app is deployed, add a **Webhook** pointing at
+   `https://app.tendermaster.com/api/stripe/webhook`, subscribe to
+   `checkout.session.completed` and `customer.subscription.*`, and copy the
+   **Signing secret** (`whsec_...`).
+
+### c) Environment variables (app host)
+
+```
+# AI
+TENDERMASTER_ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_MODEL=claude-opus-4-8
+
+# Supabase — NEXT_PUBLIC_* must be present at BUILD time (Vercel handles this)
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+SUPABASE_SERVICE_ROLE_KEY=eyJ...          # server-only
+
+# Stripe
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_PRICE_ID=price_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# App URL (for Stripe redirects + email links)
+NEXT_PUBLIC_APP_URL=https://app.tendermaster.com
+```
+
+> ⚠️ The `NEXT_PUBLIC_*` values are baked into the client bundle **at build time**,
+> so they must be set when you build (not only at runtime). On Vercel this is
+> automatic; on a VPS, export them before `npm run build`.
+
+### How the gating behaves
+
+- **No Supabase keys** → app runs as one open workspace (great for local dev).
+- **Supabase keys set** → visitors must log in (`/login`, `/signup`, magic link).
+- **Stripe keys set too** → logged-in users without an active subscription are
+  sent to `/subscribe` (Stripe Checkout) before they can use the app.
+
+### Still to do after keys are live (next stage)
+
+The data layer still uses the local JSON store; the **Supabase schema is ready**,
+so the remaining step is pointing the app's data functions (`src/lib/store.ts`)
+at Supabase and moving uploads to the `documents` bucket. Auth, billing, and the
+schema are done — this is the wiring that turns the single workspace into true
+per-customer isolation.
 
 ---
 
-## 3. What's still needed to be truly production-ready
+## 4. What's still needed to be truly production-ready
 
-- **Authentication & multi-tenant accounts** (today it's a single workspace).
-- **Postgres + object storage** (replace the JSON store and local uploads).
-- **Billing** (Stripe) gating access to `app.tendermaster.com`.
+- **Wire the data layer to Supabase** (schema + auth + storage already built).
+- **Deploy** to `tendermaster.com` + `app.tendermaster.com` and add the Stripe webhook.
 - **Real tender-discovery source** — the matcher in `saas/src/lib/discovery.ts`
   ships with a curated starter feed; plug in PPRA/EPADS scraping or an aggregator
   API behind the same `seedLeads()` seam.

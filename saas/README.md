@@ -82,14 +82,26 @@ That's all that's needed from your side right now.
 | `src/app/` | Dashboard, tender upload, tender detail, company profile, onboarding |
 | `src/app/api/tenders/[id]/pdf` | Download route for the generated submission PDF |
 
+## Accounts & billing (Supabase + Stripe)
+
+Auth (Supabase), the subscription gate (Stripe), and the full Postgres schema
+with Row Level Security are **built and wired**, and stay dormant until their env
+keys are set:
+
+- No Supabase keys → one open workspace (local dev).
+- Supabase keys → login required (`/login`, `/signup`, magic link).
+- Stripe keys too → unsubscribed users are sent to `/subscribe` (Stripe Checkout).
+
+Setup + env vars: [`../DEPLOY.md`](../DEPLOY.md). Schema: [`supabase/schema.sql`](./supabase/schema.sql).
+
 ## Deployment (two domains)
 
 Marketing site (`landing/`) → **tendermaster.com**; the app (`saas/`) →
 **app.tendermaster.com**. See [`../DEPLOY.md`](../DEPLOY.md).
 
-## Next up (Phase 2 continued)
+## Next up
 
-- Real multi-tenant **auth** + billing.
-- Swap JSON store → **Postgres/Prisma** and uploads → object storage.
+- **Wire the data layer to Supabase** (schema/auth/storage/billing already built) —
+  turns the single workspace into true per-customer isolation.
 - **Real discovery source** (PPRA/EPADS scraping or aggregator API) behind `seedLeads()`.
 - Award-letter ingestion (extract Agreement Amount on a win) + win/loss learning loop.
