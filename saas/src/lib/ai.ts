@@ -3,12 +3,18 @@ import type { ExtractedTender } from './types';
 
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-4-8';
 
+// The app uses its own key name so it never clashes with Claude Code's own
+// ANTHROPIC_API_KEY auth. Falls back to ANTHROPIC_API_KEY for local dev.
+function apiKey(): string | undefined {
+  return process.env.TENDERMASTER_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+}
+
 export function aiEnabled(): boolean {
-  return !!process.env.ANTHROPIC_API_KEY;
+  return !!apiKey();
 }
 
 function client(): Anthropic {
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+  return new Anthropic({ apiKey: apiKey()! });
 }
 
 const EXTRACTION_SYSTEM = `You are an expert analyst of Pakistani public-sector (PPRA/PEC) construction & EPC tenders.
