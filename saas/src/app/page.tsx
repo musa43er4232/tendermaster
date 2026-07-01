@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getCurrentCompany } from '@/lib/company';
 import * as store from '@/lib/store';
+import { matchLead } from '@/lib/discovery';
 import { VerdictBadge, StatusChip } from '@/components/ui';
 import { pkrM, fmtDate, daysUntil } from '@/lib/util';
 import { dismissReminder } from './actions';
@@ -23,6 +24,9 @@ export default async function Dashboard() {
   const wonCount = tenders.filter((t) => t.status === 'won').length;
   const live = tenders.filter((t) => !['won', 'lost'].includes(t.status));
 
+  const newLeads = store.listLeads('new');
+  const strongLeadCount = newLeads.filter((l) => matchLead(company, l).fit === 'strong').length;
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -40,6 +44,20 @@ export default async function Dashboard() {
           <Link href="/tenders/new" className="btn btn-primary">+ New tender</Link>
         </div>
       </div>
+
+      {/* Discovery nudge */}
+      {newLeads.length > 0 && (
+        <Link href="/discover" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent/40 bg-gradient-to-r from-accent/15 to-purple/10 px-5 py-4 transition hover:border-accent">
+          <div>
+            <p className="text-sm font-semibold text-white">
+              {newLeads.length} new tender{newLeads.length === 1 ? '' : 's'} matched to your firm
+              {strongLeadCount > 0 && <span className="text-good"> · {strongLeadCount} strong fit</span>}
+            </p>
+            <p className="text-xs text-muted">Auto-found from PPRA, EPADS &amp; press and pre-screened against your profile.</p>
+          </div>
+          <span className="btn btn-primary text-sm">View matches →</span>
+        </Link>
+      )}
 
       {/* Onboarding nudge */}
       {company.readinessScore < 100 && (

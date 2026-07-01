@@ -263,9 +263,10 @@ function StepAssets({ company }: { company: ReturnType<typeof getCompany> }) {
   if (!company) return null;
   return (
     <div className="space-y-5">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <AssetCard kind="stamp" label="Company e-stamp (seal)" hint="Applied to every page of generated submissions." present={!!company.stampDocId} />
-        <AssetCard kind="signature" label="Authorised signature" hint="Stamped beside the seal on each page." present={!!company.signatureDocId} />
+      <div className="grid gap-4 sm:grid-cols-3">
+        <AssetCard kind="stamp" label="Company e-stamp (seal)" hint="Stamped on every page of generated submissions." present={!!company.stampDocId} />
+        <AssetCard kind="signature" label="Authorised signature" hint="Placed beside the seal on each page." present={!!company.signatureDocId} />
+        <AssetCard kind="logo" label="Company logo" hint="Shown on the submission cover page and in your workspace." present={!!company.logoDocId} />
       </div>
       <div className="card text-center">
         <h3 className="text-lg font-bold text-white">That&apos;s your profile.</h3>
@@ -281,7 +282,7 @@ function StepAssets({ company }: { company: ReturnType<typeof getCompany> }) {
   );
 }
 
-function AssetCard({ kind, label, hint, present }: { kind: 'stamp' | 'signature'; label: string; hint: string; present: boolean }) {
+function AssetCard({ kind, label, hint, present }: { kind: 'stamp' | 'signature' | 'logo'; label: string; hint: string; present: boolean }) {
   return (
     <form action={saveAsset} className="card">
       <input type="hidden" name="kind" value={kind} />

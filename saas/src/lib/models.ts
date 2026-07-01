@@ -16,6 +16,7 @@ export interface Company {
   ntn?: string | null;
   stampDocId?: string | null;
   signatureDocId?: string | null;
+  logoDocId?: string | null;
   readinessScore: number;
   createdAt: string;
 }
@@ -140,6 +141,29 @@ export interface Tender {
   submissionMissingCount?: number | null;
 }
 
+/// A discovered tender opportunity (from the discovery feed), before the firm
+/// decides to pursue it. Importing a lead creates a full Tender.
+export interface TenderLead {
+  id: string;
+  companyId: string;
+  title: string;
+  agency?: string | null;
+  source?: string | null; // "PPRA" | "EPADS" | "Newspaper" | ...
+  workType?: string | null;
+  refNo?: string | null;
+  estimatedCostPkr?: number | null;
+  earnestMoneyPct?: number | null;
+  requiredPecCat?: string | null;
+  requiredRegistrations?: string | null; // serialized string[] of credential kinds
+  city?: string | null;
+  submissionDeadline?: string | null;
+  publishedDate?: string | null;
+  url?: string | null;
+  status: string; // "new" | "imported" | "dismissed"
+  importedTenderId?: string | null;
+  createdAt: string;
+}
+
 export interface Reminder {
   id: string;
   companyId: string;
@@ -166,4 +190,5 @@ export interface DB {
   requirements: Requirement[];
   checklist: ChecklistItem[];
   reminders: Reminder[];
+  leads: TenderLead[];
 }

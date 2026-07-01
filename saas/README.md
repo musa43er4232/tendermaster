@@ -55,6 +55,12 @@ That's all that's needed from your side right now.
   people, financials, and the **stamp + signature** assets.
 - **Lifecycle** — mark submitted / won / lost; reminders for deadlines and licence expiry; an
   outcome-check nudge fires after each deadline.
+- **Tender Discovery** (`/discover`) — auto-finds opportunities (curated starter feed modeled on
+  PPRA/EPADS/press) and **pre-screens each against your profile** with a fit score and specific
+  reasons/blockers. One click imports a lead into your pipeline as a full tender. Live portal
+  scraping plugs into the same matcher via `src/lib/discovery.ts` → `seedLeads()`.
+- **Live AI status** — the nav shows **AI live** / **AI demo**. Real Claude extraction is used when
+  a key is set; on any API error it falls back to a sample instead of failing the upload.
 - **Compiled submission PDF** — one click builds a print-ready package: a cover page (mirrors the
   real LDA tender cover), then a labelled divider + content page per checklist item — a real
   uploaded certificate is merged in, an AI/template-drafted letter is generated for items like the
@@ -71,13 +77,19 @@ That's all that's needed from your side right now.
 | `src/lib/checklist.ts` | Builds the per-tender document checklist |
 | `src/lib/pdfBuilder.ts` | Compiles the submission PDF (cover, dividers, merge/draft, stamp overlay) |
 | `src/lib/pec.ts` | PEC category ladder & "C-6 & above" logic |
+| `src/lib/discovery.ts` | Tender-discovery feed + fit-matching vs the company |
 | `src/lib/store.ts` | JSON data store + seed (prod → Prisma/Postgres) |
 | `src/app/` | Dashboard, tender upload, tender detail, company profile, onboarding |
 | `src/app/api/tenders/[id]/pdf` | Download route for the generated submission PDF |
 
+## Deployment (two domains)
+
+Marketing site (`landing/`) → **tendermaster.com**; the app (`saas/`) →
+**app.tendermaster.com**. See [`../DEPLOY.md`](../DEPLOY.md).
+
 ## Next up (Phase 2 continued)
 
-- Real multi-tenant **auth**.
-- **OCR/agency intelligence** and the win/loss learning loop.
-- Swap JSON store → **Postgres/Prisma**.
-- Award-letter ingestion (extract Agreement Amount on a win).
+- Real multi-tenant **auth** + billing.
+- Swap JSON store → **Postgres/Prisma** and uploads → object storage.
+- **Real discovery source** (PPRA/EPADS scraping or aggregator API) behind `seedLeads()`.
+- Award-letter ingestion (extract Agreement Amount on a win) + win/loss learning loop.

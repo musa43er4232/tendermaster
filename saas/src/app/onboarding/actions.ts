@@ -138,8 +138,10 @@ export async function removeFinancial(id: string): Promise<void> {
 }
 
 // ---- Step 6: assets + finish ----
+const ASSET_TITLES: Record<string, string> = { stamp: 'Company e-stamp', signature: 'Authorised signature', logo: 'Company logo' };
+
 export async function saveAsset(formData: FormData): Promise<void> {
-  const kind = (str(formData, 'kind') as 'stamp' | 'signature') ?? 'stamp';
+  const kind = (str(formData, 'kind') as 'stamp' | 'signature' | 'logo') ?? 'stamp';
   const file = formData.get('file') as File | null;
   if (file && file.size > 0) {
     const bytes = Buffer.from(await file.arrayBuffer());
@@ -150,7 +152,7 @@ export async function saveAsset(formData: FormData): Promise<void> {
     store.setAsset(kind, file.name, { fileName: file.name, filePath, mimeType: file.type, sizeBytes: file.size });
   } else {
     // Mark as provided without a file (e.g. captured elsewhere) so the flow can proceed.
-    store.setAsset(kind, kind === 'stamp' ? 'Company e-stamp' : 'Authorised signature');
+    store.setAsset(kind, ASSET_TITLES[kind] ?? kind);
   }
   refresh();
   redirect('/onboarding?step=6');

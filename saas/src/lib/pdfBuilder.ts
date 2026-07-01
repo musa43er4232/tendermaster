@@ -20,6 +20,7 @@ export interface PdfCompany {
   email?: string | null;
   stampDocId?: string | null;
   signatureDocId?: string | null;
+  logoDocId?: string | null;
 }
 
 export interface PdfTender {
@@ -59,10 +60,11 @@ export async function buildSubmissionPdf(
 
   const stampImg = await embedAssetImage(pdf, documents.find((d) => d.id === company.stampDocId));
   const sigImg = await embedAssetImage(pdf, documents.find((d) => d.id === company.signatureDocId));
+  const logoImg = await embedAssetImage(pdf, documents.find((d) => d.id === company.logoDocId));
 
   let missingCount = 0;
 
-  addCoverPage(pdf, font, fontBold, company, tender);
+  addCoverPage(pdf, font, fontBold, company, tender, logoImg);
 
   for (const item of tender.checklist) {
     addDividerPage(pdf, font, fontBold, company, item);
@@ -93,9 +95,19 @@ export async function buildSubmissionPdf(
 
 // ---------------- Page builders ----------------
 
-function addCoverPage(pdf: PDFDocument, font: PDFFont, fontBold: PDFFont, company: PdfCompany, tender: PdfTender): void {
+function addCoverPage(pdf: PDFDocument, font: PDFFont, fontBold: PDFFont, company: PdfCompany, tender: PdfTender, logo: EmbeddedImg | null): void {
   const page = pdf.addPage([PAGE_W, PAGE_H]);
-  let y = PAGE_H - 110;
+  let y = PAGE_H - 70;
+
+  // Company logo, centered at the top of the cover.
+  if (logo) {
+    const s = Math.min(120 / logo.w, 70 / logo.h, 1);
+    const w = logo.w * s, h = logo.h * s;
+    page.drawImage(logo.img, { x: (PAGE_W - w) / 2, y: y - h, width: w, height: h });
+    y -= h + 24;
+  } else {
+    y -= 40;
+  }
 
   const drawCentered = (text: string, size: number, f: PDFFont, color = rgb(0, 0, 0)) => {
     const clean = safeText(text);

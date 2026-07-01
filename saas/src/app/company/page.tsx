@@ -120,11 +120,12 @@ export default async function CompanyPage() {
           </div>
 
           <div className="card">
-            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted">Stamp &amp; signature</h2>
-            <p className="mb-3 text-xs text-muted">Applied automatically to every page of generated submissions.</p>
-            <div className="flex gap-3">
+            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted">Branding &amp; signing</h2>
+            <p className="mb-3 text-xs text-muted">Stamp &amp; signature go on every generated page; the logo appears on the submission cover.</p>
+            <div className="flex flex-wrap gap-3">
               <AssetChip ok={hasStamp} label="Company e-stamp" />
               <AssetChip ok={hasSignature} label="Authorised signature" />
+              <AssetChip ok={!!company.logoDocId} label="Company logo" />
             </div>
             <p className="mt-3 text-[11px] text-muted2">Vault: {documents.length} document(s) stored.</p>
           </div>

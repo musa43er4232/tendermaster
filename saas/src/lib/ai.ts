@@ -59,7 +59,7 @@ Use null/empty for unknown fields. Do not invent values.`;
 export async function extractTender(
   pdf: Buffer,
   fileName: string,
-): Promise<{ data: ExtractedTender; mock: boolean }> {
+): Promise<{ data: ExtractedTender; mock: boolean; error?: string }> {
   if (!aiEnabled()) {
     return { data: mockExtraction(fileName), mock: true };
   }
@@ -72,15 +72,28 @@ export async function extractTender(
     { type: 'text', text: `Extract the tender. ${SCHEMA_HINT}` },
   ];
 
-  const resp = await client().messages.create({
-    model: MODEL,
-    max_tokens: 4000,
-    system: EXTRACTION_SYSTEM,
-    messages: [{ role: 'user', content: content as any }],
-  });
+  try {
+    const resp = await client().messages.create(
+      {
+        model: MODEL,
+        max_tokens: 4000,
+        system: EXTRACTION_SYSTEM,
+        messages: [{ role: 'user', content: content as any }],
+      },
+      { timeout: 180_000, maxRetries: 1 },
+    );
 
-  const data = parseJson(textOf(resp));
-  return { data: { ...mockExtraction(fileName), ...data } as ExtractedTender, mock: false };
+    const data = parseJson(textOf(resp));
+    // Guard: if the model returned nothing usable, treat as a soft failure.
+    if (!data || !data.title) {
+      return { data: mockExtraction(fileName), mock: true, error: 'AI returned no usable data — showing a sample. Try re-uploading.' };
+    }
+    return { data: { ...mockExtraction(fileName), ...data } as ExtractedTender, mock: false };
+  } catch (err: any) {
+    // Never fail the upload: fall back to the sample and surface a note.
+    const msg = err?.status === 401 ? 'AI key rejected (401) — check ANTHROPIC_API_KEY.' : err?.status === 429 ? 'AI rate-limited (429) — try again shortly.' : `AI extraction failed (${err?.message ?? 'unknown error'}).`;
+    return { data: mockExtraction(fileName), mock: true, error: msg };
+  }
 }
 
 /** Draft a document (affidavit, cover letter, etc.) from company context. */

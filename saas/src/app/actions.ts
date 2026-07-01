@@ -30,10 +30,15 @@ export async function createTenderFromUpload(formData: FormData): Promise<void> 
   if (!file || file.size === 0) throw new Error('Please choose a tender PDF.');
 
   const { filePath, bytes } = await saveUpload(file);
-  const { data, mock } = await extractTender(bytes, file.name);
+  const { data, mock, error } = await extractTender(bytes, file.name);
   const elig = evaluateEligibility(company, data);
   const checklist = buildChecklist(company, data);
   const deadline = parseDate(data.submissionDeadline);
+  const summaryNote = error
+    ? `[${error}] `
+    : mock
+      ? '[Sample extraction — live AI is off; add your Anthropic key to read the real PDF] '
+      : '';
 
   const tender = store.createTender({
     companyId: company.id,
@@ -51,7 +56,7 @@ export async function createTenderFromUpload(formData: FormData): Promise<void> 
       completionTime: data.completionTime,
       submissionDeadline: deadline ? deadline.toISOString() : null,
       openingDate: parseDate(data.openingDate)?.toISOString() ?? null,
-      summary: (mock ? '[Sample extraction — add ANTHROPIC_API_KEY for live reading] ' : '') + data.summary,
+      summary: summaryNote + data.summary,
       extractedJson: JSON.stringify(data),
       verdict: elig.verdict,
       predictedScore: elig.predictedScore,

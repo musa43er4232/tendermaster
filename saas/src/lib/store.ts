@@ -3,17 +3,18 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import path from 'path';
 import type {
   DB, Company, CompanyFull, Credential, Project, Person, FinancialYear,
-  DocumentRec, Tender, TenderFull, Requirement, ChecklistItem, Reminder,
+  DocumentRec, Tender, TenderFull, Requirement, ChecklistItem, Reminder, TenderLead,
 } from './models';
 import { mockExtraction } from './ai';
 import { evaluateEligibility } from './eligibility';
 import { buildChecklist } from './checklist';
+import { seedLeads } from './discovery';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_PATH = path.join(DATA_DIR, 'db.json');
 
 function emptyDb(): DB {
-  return { companies: [], credentials: [], projects: [], people: [], financials: [], documents: [], tenders: [], requirements: [], checklist: [], reminders: [] };
+  return { companies: [], credentials: [], projects: [], people: [], financials: [], documents: [], tenders: [], requirements: [], checklist: [], reminders: [], leads: [] };
 }
 
 // Persist a single DB across hot reloads in dev.
@@ -32,10 +33,18 @@ function load(): DB {
     db = emptyDb();
   }
   g.__tmDb = db;
+  let dirty = false;
   if (db.companies.length === 0) {
     seed(db);
-    save();
+    dirty = true;
   }
+  // Ensure the discovery feed exists (also back-fills older data files).
+  if (!db.leads) db.leads = [];
+  if (db.leads.length === 0 && db.companies[0]) {
+    db.leads = seedLeads(db.companies[0].id).map((l) => ({ id: id(), createdAt: now(), status: 'new', ...l }));
+    dirty = true;
+  }
+  if (dirty) save();
   return db;
 }
 
@@ -270,8 +279,8 @@ export function deleteFinancial(finId: string): void {
   save();
 }
 
-/** Store a stamp or signature asset and point the company record at it. */
-export function setAsset(kind: 'stamp' | 'signature', title: string, file?: { fileName: string; filePath: string; mimeType: string; sizeBytes: number }): void {
+/** Store a stamp, signature or logo asset and point the company record at it. */
+export function setAsset(kind: 'stamp' | 'signature' | 'logo', title: string, file?: { fileName: string; filePath: string; mimeType: string; sizeBytes: number }): void {
   const db = load();
   const cid = companyId();
   if (!cid) return;
@@ -279,8 +288,50 @@ export function setAsset(kind: 'stamp' | 'signature', title: string, file?: { fi
   db.documents.push(doc);
   const c = db.companies[0];
   if (kind === 'stamp') c.stampDocId = doc.id;
-  else c.signatureDocId = doc.id;
+  else if (kind === 'signature') c.signatureDocId = doc.id;
+  else c.logoDocId = doc.id;
   save();
+}
+
+// ---------------- Discovery leads ----------------
+
+export function listLeads(status?: string): TenderLead[] {
+  const db = load();
+  const cid = companyId();
+  return db.leads
+    .filter((l) => l.companyId === cid && (!status || l.status === status))
+    .sort((a, b) => (a.submissionDeadline ?? '').localeCompare(b.submissionDeadline ?? ''));
+}
+
+export function getLead(leadId: string): TenderLead | null {
+  return load().leads.find((l) => l.id === leadId) ?? null;
+}
+
+export function setLeadStatus(leadId: string, status: string, importedTenderId?: string): void {
+  const db = load();
+  const l = db.leads.find((x) => x.id === leadId);
+  if (!l) return;
+  l.status = status;
+  if (importedTenderId) l.importedTenderId = importedTenderId;
+  save();
+}
+
+/** Re-run the discovery feed, adding any leads not already present (by refNo/title). */
+export function refreshLeads(): number {
+  const db = load();
+  const cid = companyId();
+  if (!cid) return 0;
+  const existing = new Set(db.leads.map((l) => `${l.refNo}|${l.title}`));
+  let added = 0;
+  for (const l of seedLeads(cid)) {
+    const key = `${l.refNo}|${l.title}`;
+    if (!existing.has(key)) {
+      db.leads.push({ id: id(), createdAt: now(), status: 'new', ...l });
+      added++;
+    }
+  }
+  if (added) save();
+  return added;
 }
 
 // ---------------- Seed ----------------

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Nav } from '@/components/Nav';
 import { getCurrentCompany } from '@/lib/company';
+import { aiEnabled } from '@/lib/ai';
 
 export const metadata: Metadata = {
   title: 'TenderMaster',
@@ -21,7 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className="font-sans text-ink antialiased">
-        <Nav readiness={company?.readinessScore} />
+        <Nav readiness={company?.readinessScore} aiLive={aiEnabled()} />
         <main className="mx-auto max-w-6xl px-5 py-8">{children}</main>
       </body>
     </html>
